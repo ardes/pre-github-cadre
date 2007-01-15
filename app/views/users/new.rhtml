@@ -1,0 +1,26 @@
+<h1>New user</h1>
+
+<%= error_messages_for :user %>
+
+<% form_for(:user, :url => users_path) do |f| %>
+  <p>
+    <b>Email</b><br />
+    <%= f.text_field :email %>
+  </p>
+
+  <p>
+    <b>Password hash</b><br />
+    <%= f.text_field :password_hash %>
+  </p>
+
+  <p>
+    <b>Display name</b><br />
+    <%= f.text_field :display_name %>
+  </p>
+
+  <p>
+    <%= submit_tag "Create" %>
+  </p>
+<% end %>
+
+<%= link_to 'Back', users_path %>
