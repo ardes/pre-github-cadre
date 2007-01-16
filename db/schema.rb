@@ -4,10 +4,10 @@
 
 ActiveRecord::Schema.define(:version => 1) do
 
-  create_table "events", :force => true do |t|
-    t.column "type",       :string
-    t.column "ip_address", :string
-    t.column "created_at", :datetime
+  create_table "users", :force => true do |t|
+    t.column "email",         :string
+    t.column "password_hash", :string
+    t.column "display_name",  :string
   end
 
 end
