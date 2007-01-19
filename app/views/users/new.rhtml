@@ -9,15 +9,25 @@
   </p>
 
   <p>
-    <b>Password hash</b><br />
-    <%= f.text_field :password_hash %>
+    <b>Confirm email</b><br />
+    <%= f.confirmation_text_field :email %>
   </p>
 
   <p>
-    <b>Display name</b><br />
+    <b>Display name (optional)</b><br />
     <%= f.text_field :display_name %>
   </p>
 
+  <p>
+    <b>Password</b><br />
+    <%= f.password_field :password %>
+  </p>
+
+  <p>
+    <b>Confirm password</b><br />
+    <%= f.confirmation_password_field :password %>
+  </p>
+  
   <p>
     <%= submit_tag "Create" %>
   </p>

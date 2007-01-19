@@ -1,6 +1,6 @@
 require File.dirname(__FILE__) + '/../spec_helper'
 
-context "A User class" do
+context "The User class" do
   fixtures :users, :user_properties
 
   specify "has the class-wide password_algorithm attribute" do
@@ -40,8 +40,7 @@ context "A new User" do
   fixtures :users, :user_properties
 
   setup do
-    @user = users(:fred).clone # start with a valid User
-    @user.email = 'fred2@gmail.com'
+    @user = User.new :email => 'barney@gmail.com', :password => 'betty' # start with a valid User
   end
   
   specify "should be invalid without an :email" do
@@ -56,22 +55,51 @@ context "A new User" do
     @user.errors.full_messages.should == ["Email has already been taken"]
   end
   
-  specify "should be invalid without a matching :email_confirmation" do
-    @user.attributes = {:email => 'foo@gmail.com', :email_confirmation => 'as'}
+  specify "should be invalid without a matching :email_confirmation, if it is supplied" do
+    @user.email_confirmation = 'not_barney@gmail.com'
     @user.should_not_be_valid
     @user.errors.full_messages.should == ["Email doesn't match confirmation"]
   end
   
-  specify  "should be invalid with short password (<5 chars)" do
+  specify "should be invalid without a password" do
+    @user.password = nil
+    @user.should_not_be_valid
+    @user.errors.full_messages.should == ["Password can't be blank"]
+  end
+  
+  specify "should be invalid with short password (<5 chars)" do
     @user.password = 'tiny'
     @user.should_not_be_valid
     @user.errors.full_messages.should == ["Password is too short (minimum is 5 characters)"]
   end
 
-  specify "should be invalid without a matching :password_confirmation" do
-    @user.attributes = {:password => "Krazy!", :password_confirmation => 'NotKrazy!'}
+  specify "should be invalid without a matching :password_confirmation, if it is supplied" do
+    @user.password_confirmation = 'not_betty'
     @user.should_not_be_valid
     @user.errors.full_messages.should == ["Password doesn't match confirmation"]
+  end
+  
+  specify "should be valid with an :email and :password" do
+    @user.should_be_valid
+  end
+
+  specify "should be valid with an :email and :password and matching :email_confirmation, and :password_confirmation, if they are supplied" do
+    @user.password_confirmation = 'betty'
+    @user.email_confirmation = 'barney@gmail.com'
+    @user.should_be_valid
+  end
+end
+
+context "A User updating their details" do
+  fixtures :users, :user_properties
+
+  setup do
+    @user = users(:fred)
+  end
+
+  specify "should not update password if it is not supplied" do
+    @user.save
+    @user.should_match_password_hash('wilma')
   end
 end
 
@@ -89,14 +117,12 @@ context "A User with an old password_algorithm" do
   
   specify "should update password hash on authenticate with new algorithm" do
     @user.authenticate_password('wilma')
-    @user.password.should == 'wilma'
     @user.password_algorithm.should == 'md5'
     @user.password_hash.should == SaltedHash.compute('md5', @user.password_salt, 'wilma')
   end
   
-  specify "should update password hash on set_password with new algorithm" do
-    @user.password = 'betty'
-    @user.password.should == 'betty'
+  specify "should update password hash on hash_password with new algorithm" do
+    @user.hash_password 'betty'
     @user.password_algorithm.should == 'md5'
     @user.password_hash.should == SaltedHash.compute('md5', @user.password_salt, 'betty')
   end
