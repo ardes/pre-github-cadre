@@ -1,13 +1,17 @@
 require File.join(File.dirname(__FILE__), 'spec_helper')
 
 context "The SaltedHash module" do
-  specify "should compute a salted hash with compute(algorithm, salt, pass)" do
-    SaltedHash.compute('md5', '0f8a', 'pass').should_be_kind_of(String)
+  specify "should compute a salted hash with compute(algorithm, pass, salt)" do
+    SaltedHash.compute('md5', 'pass', '0f8a').should_be_kind_of(String)
+  end
+
+  specify "should compute a hash with compute(algorithm, pass)" do
+    SaltedHash.compute('md5', 'pass').should_be_kind_of(String)
   end
 
   specify "should compute a salted hash for each supported algorithm" do
     SaltedHash.algorithms.each do |a|
-      lambda{ hash = SaltedHash.compute(a, '0f8b', 'secret') }.should_not_raise
+      lambda{ hash = SaltedHash.compute(a, 'secret', '0f8b') }.should_not_raise
     end
   end
   

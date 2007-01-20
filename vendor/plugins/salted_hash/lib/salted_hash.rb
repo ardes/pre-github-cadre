@@ -21,8 +21,8 @@ module SaltedHash
     raise ArgumentError, "Unsupported algorithm '#{algorithm}'" unless algorithms.include?(algorithm.to_s.downcase)
   end
   
-  # computes a hash (hex pair format) given a digest algorithm name (see algorithms), salt string (hex pair format) and password string
-  def self.compute(algorithm, salt, password)
+  # computes a hash (hex pair format) given a digest algorithm name (see algorithms), password string, and optional salt string (in hex pair format)
+  def self.compute(algorithm, password, salt = '')
     assert_supported_algorithm(algorithm)
     digest = "Digest::#{algorithm.upcase}".constantize
     digest.hexdigest("#{hex_to_binary(salt)}#{password}")

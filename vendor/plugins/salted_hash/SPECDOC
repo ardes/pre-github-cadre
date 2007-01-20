@@ -1,5 +1,6 @@
 # The SaltedHash module
-# * should compute a salted hash with compute(algorithm, salt, pass)
+# * should compute a salted hash with compute(algorithm, pass, salt)
+# * should compute a hash with compute(algorithm, pass)
 # * should compute a salted hash for each supported algorithm
 # * should raise an error with assert_supported_algorithm when algorithm unsupported
 # * should return a random string in hex format with salt
