@@ -1,3 +1,4 @@
+require 'rfc822'
 require 'salted_hash'
 require 'active_record/singleton'
 
@@ -10,7 +11,7 @@ class User < ActiveRecord::Base
   attr_accessor :password
   
   validates_presence_of :email
-  validates_format_of :email, :with => /(\A(\s*)\Z)|(\A([^@\s]+)@((?:[-a-z0-9]+\.)+[a-z]{2,})\Z)/i
+  validates_format_of :email, :allow_nil => true, :with => RFC822::EmailAddress
   validates_uniqueness_of :email
   validates_confirmation_of :email
   
@@ -18,9 +19,11 @@ class User < ActiveRecord::Base
   validates_confirmation_of :password, :if => :password_supplied?
   validates_length_of :password, :minimum => 5, :allow_nil => true, :if => :password_supplied?
   
+  validates_format_of :display_name, :allow_nil => true, :with => /^[a-z]{2}(?:[.'\-\w ]+)?$/i
+  
   before_save {|user| user.hash_password(user.password) if user.password_supplied?}
   
-  # list of methods that would typically be delegated to this class, which can then be used as follows:
+  # list of methods that would typically be delegated to this class, which can then be used as follows (in the other class):
   #  delegate *User.delegate_methods.push(:to => :user)
   def self.delegate_methods
     @delegate_methods ||= [:email, :email_confirmation, :password, :password_confirmation, :display_name].collect{|m| [m, "#{m}=".to_sym]}.flatten
@@ -47,6 +50,16 @@ class User < ActiveRecord::Base
   
   def password_supplied?
     !password.blank?
+  end
+  
+  # computes name from display_name, then email
+  def name
+    display_name or (email and email.sub('.',' ').sub(/@.*$/,'').titleize)
+  end
+  
+  # computes email_address from name and email
+  def email_address
+    "#{name} <#{email}>" if email
   end
   
   # Authenticates the given password against the one in the database.  Returns 

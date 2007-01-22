@@ -29,6 +29,22 @@ context "A User (in general)" do
     @user.password_salt.should_be == ''
     @user.password_algorithm.should_be == ''
   end
+  
+  specify "should derive :name from :display_name or :email" do
+    @user.name.should_be_nil
+    @user.email = 'frank@gmail.com'
+    @user.name.should == 'Frank'
+    @user.display_name = 'Frank Drebbin'
+    @user.name.should == 'Frank Drebbin'
+  end
+  
+  specify "should derive :email_address in format: ':name <:email>'" do
+    @user.email_address.should_be_nil
+    @user.email = 'frank_d_drebbin@airplane.com'
+    @user.email_address.should == 'Frank D Drebbin <frank_d_drebbin@airplane.com>'
+    @user.attributes = {:display_name => 'Johnny', :email => 'john@gmail.com'}
+    @user.email_address.should == 'Johnny <john@gmail.com>'
+  end
 end
 
 context "A new User" do
