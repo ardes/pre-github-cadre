@@ -10,11 +10,14 @@ context "The User class" do
   specify "allows setting the class-wide password_algorithm (with password_algorithm=)" do
     User.password_algorithm = 'md5'
     User.password_algorithm.should == 'md5'
-    User.password_algorithm = 'sha256'
   end
   
   specify "raises ArgumentError when setting password_algorithm with unsupported algorithm" do
     lambda{ User.password_algorithm = 'foo' }.should_raise ArgumentError
+  end
+  
+  teardown do
+    User.password_algorithm = 'sha256'
   end
 end
 

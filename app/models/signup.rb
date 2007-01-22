@@ -14,7 +14,7 @@ class Signup < Event
   end
   
   after_create do |signup|
-    SignupNotifier.deliver_activate(signup) if signup.send_email?
+    SignupNotifier.deliver_activate_your_account(signup) if signup.send_email?
   end
   
   attr_accessor_with_default :send_email, true

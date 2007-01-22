@@ -22,3 +22,18 @@ module Spec
     end
   end
 end
+
+module MailerSpecHelper#:nodoc
+  def self.included(base)
+    base.class_eval do
+      include ActionMailer::Quoting
+      include ActionController::UrlWriter
+    end
+  end
+  
+  def setup_mailer
+    ActionMailer::Base.delivery_method = :test
+    ActionMailer::Base.perform_deliveries = true
+    @queue = ActionMailer::Base.deliveries = []
+  end
+end
