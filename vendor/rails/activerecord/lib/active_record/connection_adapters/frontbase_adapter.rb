@@ -375,31 +375,33 @@ module ActiveRecord
                 (column && column.type == :integer ? '0' : quoted_false)
               when Float, Fixnum, Bignum, BigDecimal
                 value.to_s
-              when Time, Date, DateTime
-                if column
-                  case column.type
-                    when :date
-                      "DATE '#{value.strftime("%Y-%m-%d")}'"
-                    when :time
-                      "TIME '#{value.strftime("%H:%M:%S")}'"
-                    when :timestamp
-                      "TIMESTAMP '#{value.strftime("%Y-%m-%d %H:%M:%S")}'"
-                  else
-                    raise NotImplementedError, "Unknown column type!"
-                  end # case
-                else # Column wasn't passed in, so try to guess the right type
-                  if value.kind_of? Date
-                    "DATE '#{value.strftime("%Y-%m-%d")}'"
-                  else
-                    if [:hour, :min, :sec].all? {|part| value.send(:part).zero? }
-                      "TIME '#{value.strftime("%H:%M:%S")}'"
+              else
+                if value.acts_like?(:time) || value.acts_like?(:date)
+                  if column
+                    case column.type
+                      when :date
+                        "DATE '#{value.strftime("%Y-%m-%d")}'"
+                      when :time
+                        "TIME '#{value.strftime("%H:%M:%S")}'"
+                      when :timestamp
+                        "TIMESTAMP '#{value.strftime("%Y-%m-%d %H:%M:%S")}'"
                     else
-                      "TIMESTAMP '#{quoted_date(value)}'"
-                    end
-                  end 
-                end #if column
-              else 
-                "'#{quote_string(value.to_yaml)}'"
+                      raise NotImplementedError, "Unknown column type!"
+                    end # case
+                  else # Column wasn't passed in, so try to guess the right type
+                    if value.acts_like?(:date)
+                      "DATE '#{value.strftime("%Y-%m-%d")}'"
+                    else
+                      if [:hour, :min, :sec].all? {|part| value.send(:part).zero? }
+                        "TIME '#{value.strftime("%H:%M:%S")}'"
+                      else
+                        "TIMESTAMP '#{quoted_date(value)}'"
+                      end
+                    end 
+                  end #if column
+                else 
+                  "'#{quote_string(value.to_yaml)}'"
+                end
             end #case
           end
         else
@@ -778,7 +780,7 @@ module ActiveRecord
       end  
 
       # Drops a table from the database.
-      def drop_table(name)
+      def drop_table(name, options = {})
         execute "DROP TABLE #{name} RESTRICT"
       rescue ActiveRecord::StatementInvalid => e
         raise e unless e.message.match(/Referenced TABLE - \w* - does not exist/)
@@ -795,12 +797,12 @@ module ActiveRecord
 
       def add_column_options!(sql, options) #:nodoc:
         default_value = quote(options[:default], options[:column])
-        if options[:default]
+        if options_include_default?(options)
           if options[:type] == :boolean
             default_value = options[:default] == 0 ? quoted_false : quoted_true
           end
+          sql << " DEFAULT #{default_value}"
         end
-        sql << " DEFAULT #{default_value}" unless options[:default].nil?
         sql << " NOT NULL" if options[:null] == false
       end
 
@@ -828,17 +830,15 @@ module ActiveRecord
         execute(change_column_sql)
         change_column_sql = %( ALTER TABLE "#{table_name}" ALTER COLUMN "#{column_name}" )
 
-        default_value = quote(options[:default], options[:column])
-        if options[:default]
+        if options_include_default?(options)
+          default_value = quote(options[:default], options[:column])
           if type == :boolean
             default_value = options[:default] == 0 ? quoted_false : quoted_true
           end
+          change_column_sql << " SET DEFAULT #{default_value}"
         end
 
-        if default_value != "NULL"
-          change_column_sql << " SET DEFAULT #{default_value}"
-          execute(change_column_sql)
-        end
+        execute(change_column_sql)
         
 #         change_column_sql = "ALTER TABLE #{table_name} CHANGE #{column_name} #{column_name} #{type_to_sql(type, options[:limit])}"
 #         add_column_options!(change_column_sql, options)

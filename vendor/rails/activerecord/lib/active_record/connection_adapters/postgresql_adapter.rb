@@ -321,10 +321,10 @@ module ActiveRecord
         execute("ALTER TABLE #{table_name} ADD COLUMN #{column_name} #{type_to_sql(type, options[:limit])}")
 
         # Set optional default. If not null, update nulls to the new default.
-        unless default.nil?
+        if options_include_default?(options)
           change_column_default(table_name, column_name, default)
           if notnull
-            execute("UPDATE #{table_name} SET #{column_name}='#{default}' WHERE #{column_name} IS NULL")
+            execute("UPDATE #{table_name} SET #{column_name}=#{quote(default, options[:column])} WHERE #{column_name} IS NULL")
           end
         end
 
@@ -345,11 +345,14 @@ module ActiveRecord
           rename_column(table_name, "#{column_name}_ar_tmp", column_name)
           commit_db_transaction
         end
-        change_column_default(table_name, column_name, options[:default]) unless options[:default].nil?
+
+        if options_include_default?(options)
+          change_column_default(table_name, column_name, options[:default])
+        end
       end
 
       def change_column_default(table_name, column_name, default) #:nodoc:
-        execute "ALTER TABLE #{table_name} ALTER COLUMN #{quote_column_name(column_name)} SET DEFAULT '#{default}'"
+        execute "ALTER TABLE #{table_name} ALTER COLUMN #{quote_column_name(column_name)} SET DEFAULT #{quote(default)}"
       end
 
       def rename_column(table_name, column_name, new_column_name) #:nodoc:

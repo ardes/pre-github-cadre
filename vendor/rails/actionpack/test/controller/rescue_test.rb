@@ -1,7 +1,6 @@
 require File.dirname(__FILE__) + '/../abstract_unit'
 
-# gem install mocha
-require 'mocha'
+uses_mocha 'rescue' do
 
 class RescueController < ActionController::Base
   def raises
@@ -142,7 +141,9 @@ class RescueTest < Test::Unit::TestCase
     assert_equal :not_found, responses[ActionController::RoutingError.name]
     assert_equal :not_found, responses[ActionController::UnknownAction.name]
     assert_equal :not_found, responses['ActiveRecord::RecordNotFound']
-    assert_equal :bad_request, responses['ActiveRecord::RecordInvalid']
+    assert_equal :conflict, responses['ActiveRecord::StaleObjectError']
+    assert_equal :unprocessable_entity, responses['ActiveRecord::RecordInvalid']
+    assert_equal :unprocessable_entity, responses['ActiveRecord::RecordNotSaved']
   end
 
   def test_rescue_templates
@@ -210,3 +211,5 @@ class RescueTest < Test::Unit::TestCase
       end
     end
 end
+
+end # uses_mocha

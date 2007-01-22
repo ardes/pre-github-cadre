@@ -292,8 +292,12 @@ SQLTEXT
           when TrueClass             then '1'
           when FalseClass            then '0'
           when Float, Fixnum, Bignum then force_numeric?(column) ? value.to_s : "'#{value.to_s}'"
-          when Time, DateTime        then "'#{value.strftime("%Y-%m-%d %H:%M:%S")}'"
-          else                       super
+          else
+            if value.acts_like?(:time)
+              "'#{value.strftime("%Y-%m-%d %H:%M:%S")}'"
+            else
+              super
+            end
         end
       end
 
@@ -381,7 +385,7 @@ SQLTEXT
       end
 
       def add_column_options!(sql, options) #:nodoc:
-        sql << " DEFAULT #{quote(options[:default], options[:column])}" unless options[:default].nil?
+        sql << " DEFAULT #{quote(options[:default], options[:column])}" if options_include_default?(options)
 
         if check_null_for_column?(options[:column], sql)
           sql << (options[:null] == false ? " NOT NULL" : " NULL")

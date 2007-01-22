@@ -66,7 +66,6 @@ begin
       class OracleColumn < Column #:nodoc:
 
         def type_cast(value)
-          return nil if value =~ /^\s*null\s*$/i
           return guess_date_or_time(value) if type == :datetime && OracleAdapter.emulate_dates
           super
         end
@@ -172,7 +171,7 @@ begin
 
         def quote(value, column = nil) #:nodoc:
           if column && [:text, :binary].include?(column.type)
-            %Q{empty_#{ column.sql_type rescue 'blob' }()}
+            %Q{empty_#{ column.sql_type.downcase rescue 'blob' }()}
           else
             super
           end
@@ -351,7 +350,8 @@ begin
 
         def create_table(name, options = {}) #:nodoc:
           super(name, options)
-          execute "CREATE SEQUENCE #{name}_seq START WITH 10000" unless options[:id] == false
+          seq_name = options[:sequence_name] || "#{name}_seq"
+          execute "CREATE SEQUENCE #{seq_name} START WITH 10000" unless options[:id] == false
         end
 
         def rename_table(name, new_name) #:nodoc:
@@ -359,9 +359,10 @@ begin
           execute "RENAME #{name}_seq TO #{new_name}_seq" rescue nil
         end
 
-        def drop_table(name) #:nodoc:
+        def drop_table(name, options = {}) #:nodoc:
           super(name)
-          execute "DROP SEQUENCE #{name}_seq" rescue nil
+          seq_name = options[:sequence_name] || "#{name}_seq"
+          execute "DROP SEQUENCE #{seq_name}" rescue nil
         end
 
         def remove_index(table_name, options = {}) #:nodoc:
@@ -674,13 +675,14 @@ rescue LoadError
   # OCI8 driver is unavailable.
   module ActiveRecord # :nodoc:
     class Base
+      @@oracle_error_message = "Oracle/OCI libraries could not be loaded: #{$!.to_s}"
       def self.oracle_connection(config) # :nodoc:
         # Set up a reasonable error message
-        raise LoadError, "Oracle/OCI libraries could not be loaded."
+        raise LoadError, @@oracle_error_message
       end
       def self.oci_connection(config) # :nodoc:
         # Set up a reasonable error message
-        raise LoadError, "Oracle/OCI libraries could not be loaded."
+        raise LoadError, @@oracle_error_message
       end
     end
   end

@@ -1,5 +1,29 @@
 *SVN*
 
+* Make TextHelper::auto_link recognize URLs with colons in path correctly, fixes #7268.  [imajes]
+
+* Update to script.aculo.us 1.7.0.  [Thomas Fuchs]
+
+* Modernize cookie testing code, and increase coverage (Heckle++) #7101 [Kevin Clark]
+
+* Improve Test Coverage for ActionController::Routing::Route#matches_controller_and_action? (Heckle++) #7115 [Kevin Clark]
+
+* Heckling ActionController::Resources::Resource revealed that set_prefixes didn't break when :name_prefix was munged. #7081 [Kevin Clark]
+
+* Fix #distance_of_time_in_words to report accurately against the Duration class.  #7114 [eventualbuddha]
+
+* Refactor #form_tag to allow easy extending.  [Rick]
+
+* Update to Prototype 1.5.0. [Sam Stephenson]
+
+* RecordInvalid, RecordNotSaved => 422 Unprocessable Entity, StaleObjectError => 409 Conflict.  #7097 [dkubb]
+
+* Allow fields_for to be nested inside form_for, so that the name and id get properly constructed [Jamis Buck]
+
+* Allow inGroupsOf and eachSlice to be called through rjs. #7046 [Cody Fauser]
+
+* Allow exempt_from_layout :rhtml.  #6742, #7026 [dcmanges, Squeegy]
+
 * Recognize the .txt extension as Mime::TEXT [Rick]
 
 * Fix parsing of array[] CGI parameters so extra empty values aren't included.  #6252 [Nicholas Seckar, aiwilliams, brentrowland]
