@@ -20,15 +20,15 @@ context "A new Signup" do
   specify "should delegate :email, :email_confirmation, :display_name, :password and :password_confirmation (getter and setter) to :user" do
     delegate_methods = [:email, :email_confirmation, :display_name, :password, :password_confirmation]
     delegate_methods.each do |m|
-      @signup.send "#{m}=", 'foo'
-      @signup.user.send(m).should == 'foo'
-      @signup.send(m).should == 'foo'
+      random_string = (1..10).inject('') {|s,_| s << ('a'..'z').to_a[rand(26)]}
+      @signup.send "#{m}=", random_string
+      @signup.user.send(m).should == random_string
+      @signup.send(m).should == random_string
     end
   end
     
   specify "should be invalid without a valid :user" do
-    @signup.user.email_confirmation = 'kitten@gmail.com'
-    @signup.user.should_not_be_valid
+    @signup.user = User.new
     @signup.should_not_be_valid
   end
   
