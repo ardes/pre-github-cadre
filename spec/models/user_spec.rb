@@ -1,7 +1,7 @@
 require File.dirname(__FILE__) + '/../spec_helper'
 
 context "The User class" do
-  fixtures :users, :user_properties
+  fixtures :user_properties
 
   specify "has the class-wide password_algorithm attribute" do
     User.password_algorithm.should == 'sha256'
@@ -19,25 +19,20 @@ context "The User class" do
 end
 
 context "A User (in general)" do
-  fixtures :users, :user_properties
-
   setup do
-    @user = users(:fred)
+    @user = User.new
   end
   
   specify "should protect :password_hash, :password_salt and :password_algorithm from mass assignment" do
-    @user.update_attributes :email => 'FRED@F.COM', :password_hash => '1', :password_salt => '2', :password_algorithm => '3'
-    @user.reload
-    @user.email.should == 'FRED@F.COM'
-    @user.password_hash.should_not == '1'
-    @user.password_salt.should_not == '2'
-    @user.password_algorithm.should_not == '3'
-    @user.authenticate_password('wilma').should == true
+    @user.attributes = {:password_hash => '1', :password_salt => '2', :password_algorithm => '3'}
+    @user.password_hash.should_be == ''
+    @user.password_salt.should_be == ''
+    @user.password_algorithm.should_be == ''
   end
 end
 
 context "A new User" do
-  fixtures :users, :user_properties
+  fixtures :user_properties, :users
 
   setup do
     @user = User.new :email => 'barney@gmail.com', :password => 'betty' # start with a valid User
@@ -118,13 +113,13 @@ context "A User with an old password_algorithm" do
   specify "should update password hash on authenticate with new algorithm" do
     @user.authenticate_password('wilma')
     @user.password_algorithm.should == 'md5'
-    @user.password_hash.should == SaltedHash.compute('md5', @user.password_salt, 'wilma')
+    @user.password_hash.should == SaltedHash.compute('md5', 'wilma', @user.password_salt)
   end
   
   specify "should update password hash on hash_password with new algorithm" do
     @user.hash_password 'betty'
     @user.password_algorithm.should == 'md5'
-    @user.password_hash.should == SaltedHash.compute('md5', @user.password_salt, 'betty')
+    @user.password_hash.should == SaltedHash.compute('md5', 'betty', @user.password_salt)
   end
 
   teardown do

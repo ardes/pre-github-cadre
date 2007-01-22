@@ -1,0 +1,2 @@
+class Login < Event
+end

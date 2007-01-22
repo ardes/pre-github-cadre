@@ -2,33 +2,12 @@
 
 <%= error_messages_for :user %>
 
-<% form_for(:user, :url => user_path(@user), :html => { :method => :put }) do |f| %>
-  <p>
-    <b>Email</b><br />
-    <%= f.text_field :email %>
-  </p>
+<% form_for(:user, :url => user_path(@user), :html => { :method => :put }) do |form| %>
 
-  <p>
-    <b>Confirm email</b><br />
-    <%= f.confirmation_text_field :email %>
-  </p>
+  <p><b>Leave your password details blank unless you wish to change them</b></p>
 
-  <p>
-    <b>Display name (optional)</b><br />
-    <%= f.text_field :display_name %>
-  </p>
+  <%= render :partial => 'form', :locals => {:form => form} %>
 
-  <p>Leave the following blank unless you want to change you password</p>
-  
-  <p>
-    <b>New Password</b><br />
-    <%= f.password_field :password %>
-  </p>
-
-  <p>
-    <b>Confirm new password</b><br />
-    <%= f.confirmation_password_field :password %>
-  </p>
   <p>
     <%= submit_tag "Update" %>
   </p>

@@ -1,9 +1,11 @@
 require 'salted_hash'
 require 'active_record/singleton'
 
-# 
-#
 class User < ActiveRecord::Base
+  has_many :events
+  has_one :signup
+  belongs_to :activation
+  
   attr_protected :password_hash, :password_salt, :password_algorithm
   attr_accessor :password
   
@@ -16,21 +18,22 @@ class User < ActiveRecord::Base
   validates_confirmation_of :password, :if => :password_supplied?
   validates_length_of :password, :minimum => 5, :allow_nil => true, :if => :password_supplied?
   
-  validates_each 
-  
   before_save {|user| user.hash_password(user.password) if user.password_supplied?}
+  
+  # list of methods that would typically be delegated to this class, which can then be used as follows:
+  #  delegate *User.delegate_methods.push(:to => :user)
+  def self.delegate_methods
+    @delegate_methods ||= [:email, :email_confirmation, :password, :password_confirmation, :display_name].collect{|m| [m, "#{m}=".to_sym]}.flatten
+  end
   
   # singleton container for the class-wide password algorithm
   class Properties < ActiveRecord::Base
     include ActiveRecord::Singleton
   end
   
-  # used if the class-wide password_algorithm has been set
-  DEFAULT_PASSWORD_ALGORITHM = 'sha1'
-  
   # the class-wide password_algorithm
   def self.password_algorithm
-    Properties.instance.password_algorithm || DEFAULT_PASSWORD_ALGORITHM
+    Properties.instance.password_algorithm or self.password_algorithm = 'sha1'
   end
     
   # Sets the password_algorithm to be used in all future set_password calls.
@@ -68,7 +71,7 @@ class User < ActiveRecord::Base
   
   # computes a hash with the given password and compares it to the password_hash attribute of this User
   def match_password_hash?(password)
-    password_hash == SaltedHash::compute(password_algorithm, password_salt, password)
+    password_hash == SaltedHash::compute(password_algorithm, password, password_salt)
   end
   
   # sets the password_hash using the given password.  The password_algorithm used is taken
@@ -76,12 +79,16 @@ class User < ActiveRecord::Base
   def hash_password(password)
     self.password_algorithm = self.class.password_algorithm
     self.password_salt = SaltedHash::salt
-    self.password_hash = SaltedHash::compute(password_algorithm, password_salt, password)
+    self.password_hash = SaltedHash::compute(password_algorithm, password, password_salt)
   end
   
   # return a random password
   def self.random_password
     chars = ('a'..'z').to_a + ('A'..'Z').to_a + ('0'..'9').to_a
     (1..16).inject('') {|p, _| p << chars[rand(chars.length)]}
+  end
+  
+  def self.find_activated(*args)
+    with_scope(:find => {:conditions => 'activate_id IS NOT NULL'}) { find(*args) }
   end
 end

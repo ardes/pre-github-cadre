@@ -9,7 +9,7 @@ require 'digest/sha2'
 # If you wish, you can convert these to 8-bit binary strings using hex_to_binary
 #
 module SaltedHash
-  SALT_LENGTH = 20
+  SALT_LENGTH = 8
   
   # return array of the supported algorithms
   def self.algorithms

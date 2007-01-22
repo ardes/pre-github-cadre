@@ -2,7 +2,20 @@
 # migrations feature of ActiveRecord to incrementally modify your database, and
 # then regenerate this schema definition.
 
-ActiveRecord::Schema.define(:version => 2) do
+ActiveRecord::Schema.define(:version => 5) do
+
+  create_table "event_properties", :force => true do |t|
+    t.column "key_algorithm", :string
+  end
+
+  create_table "events", :force => true do |t|
+    t.column "user_id",       :integer
+    t.column "type",          :string
+    t.column "ip_address",    :string
+    t.column "key_algorithm", :string
+    t.column "key_hash",      :string
+    t.column "created_at",    :datetime
+  end
 
   create_table "user_properties", :force => true do |t|
     t.column "password_algorithm", :string
@@ -10,10 +23,11 @@ ActiveRecord::Schema.define(:version => 2) do
 
   create_table "users", :force => true do |t|
     t.column "email",              :string
-    t.column "password_algorithm", :string, :default => "", :null => false
-    t.column "password_hash",      :string, :default => "", :null => false
-    t.column "password_salt",      :string, :default => "", :null => false
+    t.column "password_algorithm", :string,  :default => "", :null => false
+    t.column "password_hash",      :string,  :default => "", :null => false
+    t.column "password_salt",      :string,  :default => "", :null => false
     t.column "display_name",       :string
+    t.column "activation_id",      :integer
   end
 
 end

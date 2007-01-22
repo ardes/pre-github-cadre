@@ -4,6 +4,8 @@ class CreateEvents < ActiveRecord::Migration
       t.column :user_id, :integer
       t.column :type, :string
       t.column :ip_address, :string
+      t.column :key_algorithm, :string
+      t.column :key_hash, :string
       t.column :created_at, :datetime
     end
   end
