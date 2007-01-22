@@ -3,7 +3,7 @@
 <plist version="1.0">
 <dict>
 	<key>currentDocument</key>
-	<string>vendor/plugins/association_extensions/spec/models/preload_self_in_spec.rb</string>
+	<string>vendor/plugins/salted_hash/spec/salted_hash_spec.rb</string>
 	<key>documents</key>
 	<array>
 		<dict>
@@ -393,20 +393,6 @@
 			<key>firstVisibleLine</key>
 			<integer>0</integer>
 		</dict>
-		<key>lib/tasks/rspec_additions.rake</key>
-		<dict>
-			<key>caret</key>
-			<dict>
-				<key>column</key>
-				<integer>0</integer>
-				<key>line</key>
-				<integer>2</integer>
-			</dict>
-			<key>firstVisibleColumn</key>
-			<integer>0</integer>
-			<key>firstVisibleLine</key>
-			<integer>0</integer>
-		</dict>
 		<key>spec/fixtures/event_properties.yml</key>
 		<dict>
 			<key>caret</key>
@@ -753,14 +739,58 @@
 				<integer>1</integer>
 			</dict>
 		</dict>
+		<key>vendor/plugins/salted_hash/lib/salted_hash.rb</key>
+		<dict>
+			<key>caret</key>
+			<dict>
+				<key>column</key>
+				<integer>0</integer>
+				<key>line</key>
+				<integer>0</integer>
+			</dict>
+			<key>firstVisibleColumn</key>
+			<integer>0</integer>
+			<key>firstVisibleLine</key>
+			<integer>0</integer>
+		</dict>
 		<key>vendor/plugins/salted_hash/spec/salted_hash_spec.rb</key>
 		<dict>
 			<key>caret</key>
 			<dict>
 				<key>column</key>
-				<integer>59</integer>
+				<integer>0</integer>
 				<key>line</key>
-				<integer>13</integer>
+				<integer>11</integer>
+			</dict>
+			<key>columnSelection</key>
+			<false/>
+			<key>firstVisibleColumn</key>
+			<integer>0</integer>
+			<key>firstVisibleLine</key>
+			<integer>0</integer>
+			<key>selectFrom</key>
+			<dict>
+				<key>column</key>
+				<integer>0</integer>
+				<key>line</key>
+				<integer>7</integer>
+			</dict>
+			<key>selectTo</key>
+			<dict>
+				<key>column</key>
+				<integer>0</integer>
+				<key>line</key>
+				<integer>11</integer>
+			</dict>
+		</dict>
+		<key>vendor/plugins/salted_hash_old/init.rb</key>
+		<dict>
+			<key>caret</key>
+			<dict>
+				<key>column</key>
+				<integer>0</integer>
+				<key>line</key>
+				<integer>0</integer>
 			</dict>
 			<key>firstVisibleColumn</key>
 			<integer>0</integer>
@@ -775,7 +805,9 @@
 		<string>vendor/plugins/active_record_singleton/Rakefile</string>
 		<string>vendor/plugins/rspec_on_rails/tasks/rspec.rake</string>
 		<string>vendor/plugins/association_extensions/spec/models/preload_self_in_spec.rb</string>
-		<string>lib/tasks/rspec_additions.rake</string>
+		<string>vendor/plugins/salted_hash/lib/salted_hash.rb</string>
+		<string>vendor/plugins/salted_hash_old/init.rb</string>
+		<string>vendor/plugins/salted_hash/spec/salted_hash_spec.rb</string>
 		<string>spec/models/event_spec.rb</string>
 		<string>spec/models/event_generate_key_spec.rb</string>
 		<string>spec/fixtures/event_properties.yml</string>
