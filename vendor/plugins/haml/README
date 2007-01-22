@@ -1,0 +1,95 @@
+= Haml and Sass
+
+Haml and Sass are templating engines
+for the two most common types of documents on the web:
+HTML and CSS, respectively.
+They are designed to make it both easier and more pleasant
+to code HTML and CSS documents,
+by eliminating redundancy,
+reflecting the underlying structure that the document represents,
+and providing elegant, easily understandable, and powerful syntax.
+
+== Formatting
+
+=== Haml
+
+The most basic element of Haml
+is a shorthand for creating HTML tags:
+
+  %tagname{ :attr1 => 'value1', :attr2 => 'value2' } Contents
+
+No end-tag is needed; Haml handles that automatically.
+Adding <tt>class</tt> and <tt>id</tt> attributes is even easier.
+Haml uses the same syntax as the CSS that styles the document:
+
+  %tagname#id.class
+
+In fact, when you're using the <tt><div></tt> tag,
+it becomes <em>even easier</em>.
+Because <tt><div></tt> is such a common element,
+a tag without a name defaults to a div. So
+
+  #foo Hello!
+
+becomes
+
+  <div id='foo'>Hello!</foo>
+  
+Haml uses indentation
+to bring the individual elements to represent the HTML structure.
+A tag's children are indented two spaces more than the parent tag.
+Again, a closing tag is automatically added.
+For example:
+
+  %ul
+    %li Salt
+    %li Pepper
+
+becomes:
+
+  <ul>
+    <li>Salt</li>
+    <li>Pepper</li>
+  </ul>
+
+You can also put plain text as a child of an element:
+
+  %p
+    Hello,
+    World!
+
+It's even possible to embed Ruby code into Haml documents.
+An equals sign, <tt>=</tt>, will output the result of the code.
+A hyphen, <tt>-</tt>, will run the code but not output the result.
+You can even use control statements
+like <tt>if</tt> and <tt>while</tt>:
+
+  %p
+    Date/Time:
+    - now = DateTime.now
+    %strong= now
+    - if now > DateTime.parse("December 31, 2006")
+      = "Happy new " + "year!"
+
+Haml provides far more tools than those presented here.
+Check out the reference documentation in the Haml module.
+
+=== Sass
+
+*add docs*
+
+== Authors
+
+Haml and Sass are designed by Hampton Catlin (hcatlin).
+Help with the Ruby On Rails implementation and much of the documentation
+by Jeff Hardy (packagethief).
+
+Nathan Weizenbaum (Nex3) contributed the buffered-engine code to Haml,
+along with many other enhancements
+(including the silent-line syntax: "-").
+He continues to actively work on both Haml and Sass.
+
+If you use this software, you must pay Hampton a compliment.
+Say something nice about it.
+Beyond that, the implementation is licensed under the MIT License.
+Ok, fine, I guess that means compliments aren't *required*.
