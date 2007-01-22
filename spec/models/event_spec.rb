@@ -14,14 +14,7 @@ end
 
 context "A new Event (and subclasses)" do
   setup do
-    @event = Event.new
-    @event.user_id = 1 # start with a valid User
-  end
-
-  specify "should be invalid without a :user_id" do
-    @event.user_id = nil
-    @event.should_not_be_valid
-    @event.errors.full_messages.should == ["User can't be blank"]
+    @event = Event.new # start with a valid User
   end
 
   specify "should be invalid with a badly formed :ip_address" do
@@ -30,11 +23,7 @@ context "A new Event (and subclasses)" do
     @event.errors.full_messages.should == ["Ip address is invalid"]
   end
   
-  specify "should be valid with a :user_id" do
-    @event.should_be_valid
-  end
-  
-  specify "should be valid with an :user_id, and valid :ip_address if supplied" do
+  specify "should be valid with an :ip_address if supplied" do
     @event.ip_address = '126.127.187.2'
     @event.should_be_valid
   end
@@ -47,6 +36,25 @@ context "A new Event (and subclasses)" do
   specify "should have :created_at after create" do
     @event.save
     @event.created_at.should_be_kind_of(Time)
+  end
+end
+
+context "A new User Event (and subclasses)" do
+  fixtures :events, :event_properties
+  
+  setup do
+    @user_event = UserEvent.new
+    @user_event.user_id = 1 # start with a valid UserEvent
+  end
+
+  specify "should be invalid without a :user_id" do
+    @user_event.user_id = nil
+    @user_event.should_not_be_valid
+    @user_event.errors.full_messages.should == ["User can't be blank"]
+  end
+  
+  specify "should be valid with a :user_id" do
+    @user_event.should_be_valid
   end
 end
 

@@ -1,4 +1,4 @@
-class Activation < Event
+class Activation < UserEvent
   attr_accessor :signup
   
   validate_on_create do |activation|

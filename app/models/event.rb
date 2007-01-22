@@ -5,7 +5,6 @@ class Event < ActiveRecord::Base
   
   attr_protected :user_id, :created_at
 
-  validates_presence_of :user_id
   validates_format_of :ip_address, :allow_nil => true, :with => /\b(?:(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.){3}(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\b/
   
   # All events are readonly after they have been created

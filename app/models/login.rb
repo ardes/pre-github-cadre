@@ -1,2 +1,2 @@
-class Login < Event
+class Login < UserEvent
 end
