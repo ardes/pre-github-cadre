@@ -62,6 +62,10 @@ class User < ActiveRecord::Base
     "#{name} <#{email}>" if email
   end
   
+  def activated?
+    !activation_id.nil?
+  end
+  
   # Authenticates the given password against the one in the database.  Returns 
   # a boolean indicating whether the password was authenticated.
   #

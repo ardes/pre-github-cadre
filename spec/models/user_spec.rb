@@ -23,11 +23,12 @@ context "A User (in general)" do
     @user = User.new
   end
   
-  specify "should protect :password_hash, :password_salt and :password_algorithm from mass assignment" do
-    @user.attributes = {:password_hash => '1', :password_salt => '2', :password_algorithm => '3'}
-    @user.password_hash.should_be == ''
-    @user.password_salt.should_be == ''
-    @user.password_algorithm.should_be == ''
+  specify "should protect :activation_id, :password_hash, :password_salt and :password_algorithm from mass assignment" do
+    protected_attrs = [:activation_id, :password_hash, :password_salt, :password_algorithm]
+    @user.attributes = protected_attrs.inject({}){|h,a| h.merge(a => 'foo')}
+    protected_attrs.each do |a|
+      @user.send(a).should_not_be 'foo'
+    end
   end
   
   specify "should derive :name from :display_name or :email" do
@@ -45,6 +46,12 @@ context "A User (in general)" do
     @user.attributes = {:display_name => 'Johnny', :email => 'john@gmail.com'}
     @user.email_address.should == 'Johnny <john@gmail.com>'
   end
+  
+  specify "should be activated? if activation_id is not nil" do
+    @user.should_not_be_activated
+    @user.activation_id = 1
+    @user.should_be_activated
+  end
 end
 
 context "A new User" do
@@ -57,37 +64,37 @@ context "A new User" do
   specify "should be invalid without an :email" do
     @user.email = nil
     @user.should_not_be_valid
-    @user.errors.full_messages.should == ["Email can't be blank"]
+    @user.errors.full_messages.should_include "Email can't be blank"
   end
   
   specify "should be invalid with a non unique :email" do
     @user.email = 'fred@gmail.com'
     @user.should_not_be_valid
-    @user.errors.full_messages.should == ["Email has already been taken"]
+    @user.errors.full_messages.should_include "Email has already been taken"
   end
   
   specify "should be invalid without a matching :email_confirmation, if it is supplied" do
     @user.email_confirmation = 'not_barney@gmail.com'
     @user.should_not_be_valid
-    @user.errors.full_messages.should == ["Email doesn't match confirmation"]
+    @user.errors.full_messages.should_include "Email doesn't match confirmation"
   end
   
   specify "should be invalid without a password" do
     @user.password = nil
     @user.should_not_be_valid
-    @user.errors.full_messages.should == ["Password can't be blank"]
+    @user.errors.full_messages.should_include "Password can't be blank"
   end
   
   specify "should be invalid with short password (<5 chars)" do
     @user.password = 'tiny'
     @user.should_not_be_valid
-    @user.errors.full_messages.should == ["Password is too short (minimum is 5 characters)"]
+    @user.errors.full_messages.should_include "Password is too short (minimum is 5 characters)"
   end
 
   specify "should be invalid without a matching :password_confirmation, if it is supplied" do
     @user.password_confirmation = 'not_betty'
     @user.should_not_be_valid
-    @user.errors.full_messages.should == ["Password doesn't match confirmation"]
+    @user.errors.full_messages.should_include "Password doesn't match confirmation"
   end
   
   specify "should be valid with an :email and :password" do

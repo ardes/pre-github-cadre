@@ -1,0 +1,2 @@
+class FalseSignup < WithSignupEvent
+end

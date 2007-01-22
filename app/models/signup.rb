@@ -12,4 +12,14 @@ class Signup < Event
   after_validation do |signup| # merge user errors
     signup.user.errors.each {|a, m| signup.errors.add(a, m)} 
   end
+  
+  after_create do |signup|
+    SignupNotifier.deliver_activate(signup) if signup.send_email?
+  end
+  
+  attr_accessor_with_default :send_email, true
+  
+  def send_email?
+    send_email == true
+  end
 end

@@ -1,5 +1,29 @@
 require 'active_record/singleton'
 
+#
+#  Event (readonly, belongs_to :user)
+#   |
+#   +-- Signup (creates a user)
+#   |
+#   +-- UserEvent (requires a user_id)
+#        |
+#        +-- WithSignupEvent (requires a signup)
+#        |    |
+#        |    +-- Activation (activates a user account)
+#        |    |
+#        |    +-- FalseSignup (removes an inactive user account)
+#        |
+#        +-- Recognition (recognises a user based on cookie)
+#        |
+#        +-- Login (logs in a user)
+#        |
+#        +-- RequestResetPassword
+#        |
+#        +-- ResetPassword (resets a users password)
+#
+#
+# GenerateKey (mixin) is used in 
+
 class Event < ActiveRecord::Base
   belongs_to :user
   

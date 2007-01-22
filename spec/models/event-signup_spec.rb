@@ -6,6 +6,12 @@ context "The Signup class" do
   end
 end
 
+context "A Signup (in general)" do
+  specify "should allow setting :send_email via attributes" do
+    Signup.new(:send_email => false).should_not_send_email
+  end
+end
+
 context "A new Signup" do
   fixtures :users, :events, :event_properties
 
@@ -20,21 +26,25 @@ context "A new Signup" do
   specify "should delegate :email, :email_confirmation, :display_name, :password and :password_confirmation (getter and setter) to :user" do
     delegate_methods = [:email, :email_confirmation, :display_name, :password, :password_confirmation]
     delegate_methods.each do |m|
-      random_string = (1..10).inject('') {|s,_| s << ('a'..'z').to_a[rand(26)]}
-      @signup.send "#{m}=", random_string
-      @signup.user.send(m).should == random_string
-      @signup.send(m).should == random_string
+      @signup.send "#{m}=", 'foo'
+      @signup.user.send(m).should == 'foo'
+      @signup.send(m).should == 'foo'
     end
   end
     
   specify "should be invalid without a valid :user" do
     @signup.user = User.new
     @signup.should_not_be_valid
+    @signup.errors.full_messages.should_include "User is invalid"
   end
   
   specify "should merge inavlid user errors into errors" do
     @signup.attributes = {:password => 'gunk', :email => 'jkljkljkjkjkl', :email_confirmation => '8908989089080'}
     @signup.should_not_be_valid
     @signup.errors.full_messages.to_set.should == @signup.user.errors.full_messages.to_set << 'User is invalid'
+  end
+  
+  specify "should default to :send_email == true" do
+    @signup.should_send_email
   end
 end

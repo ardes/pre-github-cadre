@@ -20,7 +20,7 @@ context "A new Event (and subclasses)" do
   specify "should be invalid with a badly formed :ip_address" do
     @event.ip_address = '666.666.666.666'
     @event.should_not_be_valid
-    @event.errors.full_messages.should == ["Ip address is invalid"]
+    @event.errors.full_messages.should_include "Ip address is invalid"
   end
   
   specify "should be valid with an :ip_address if supplied" do
@@ -36,25 +36,6 @@ context "A new Event (and subclasses)" do
   specify "should have :created_at after create" do
     @event.save
     @event.created_at.should_be_kind_of(Time)
-  end
-end
-
-context "A new User Event (and subclasses)" do
-  fixtures :events, :event_properties
-  
-  setup do
-    @user_event = UserEvent.new
-    @user_event.user_id = 1 # start with a valid UserEvent
-  end
-
-  specify "should be invalid without a :user_id" do
-    @user_event.user_id = nil
-    @user_event.should_not_be_valid
-    @user_event.errors.full_messages.should == ["User can't be blank"]
-  end
-  
-  specify "should be valid with a :user_id" do
-    @user_event.should_be_valid
   end
 end
 
