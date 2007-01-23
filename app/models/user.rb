@@ -3,7 +3,7 @@ require 'salted_hash'
 require 'active_record/singleton'
 
 class User < ActiveRecord::Base
-  has_many :events
+  has_many :events, :dependent => :destroy
   has_one :signup
   belongs_to :activation
   
