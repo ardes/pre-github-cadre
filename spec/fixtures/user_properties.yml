@@ -1,3 +1,1 @@
-singleton:
-  id: 1
-  password_algorithm: sha256
+# empty - for testing auto-create

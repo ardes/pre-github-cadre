@@ -25,3 +25,12 @@ activation_fred:
   key_algorithm: NULL
   key_hash: NULL
   created_at: 2007-01-19 12:31:40
+  
+password_reset_request_fred:
+  id: 4
+  user_id: 1
+  type: PasswordResetRequest
+  ip_address: 187.287.120.123
+  key_algorithm: md5
+  key_hash: '6e990be83f39f46e605ddebe82543f89' # 34a350336e79e39e2d3244cee34f791c
+  created_at: 2007-01-19 12:81:40
