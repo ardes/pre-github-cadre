@@ -54,3 +54,4 @@ end
 CADRE_NAME = 'Cadre'
 CADRE_HOST = 'eeny.zapto.org:3000'
 CADRE_FROM = 'ian.w.white@gmail.com'
+CADRE_HOME = 'http://abraxis.local:3000'
