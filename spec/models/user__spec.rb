@@ -2,9 +2,9 @@ require File.dirname(__FILE__) + '/../spec_helper'
 
 context "The User class" do
   fixtures :user_properties
-
+  
   specify "has the class-wide password_algorithm attribute" do
-    User.password_algorithm.should == 'sha256'
+    User.password_algorithm.should == 'sha1'
   end
   
   specify "allows setting the class-wide password_algorithm (with password_algorithm=)" do
@@ -17,7 +17,7 @@ context "The User class" do
   end
   
   teardown do
-    User.password_algorithm = 'sha256'
+    User.password_algorithm = 'sha1'
   end
 end
 

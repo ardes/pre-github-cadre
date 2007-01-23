@@ -13,9 +13,8 @@ context "A WithSignupEvent (in general)" do
     @event.signup.should_be_nil
     @event.signup_key = 'e3907e189595061ac246459ede9600d8'
     @event.signup.should == events(:signup_joe)
-    
-    @event.signup = events(:signup_fred)
-    @event.signup.should == events(:signup_fred)
+    @event.signup = 'foo'
+    @event.signup.should == 'foo'
   end
   
   specify "should protect :signup from mass assignment" do
