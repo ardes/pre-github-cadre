@@ -3,6 +3,7 @@ ENV["RAILS_ENV"] = "test"
 # from the project root directory.
 require File.expand_path(File.dirname(__FILE__) + "/../config/environment")
 require 'spec/rails'
+require 'spec/route_expectations'
 
 # Even if you're using RSpec, RSpec on Rails is reusing some of the
 # Rails-specific extensions for fixtures and stubbed requests, response
@@ -19,21 +20,8 @@ module Spec
       # You can set up your global fixtures here, or you
       # can do it in individual contexts
       #fixtures :table_a, :table_b
+    
+      include ::Spec::RouteExpectations
     end
-  end
-end
-
-module MailerSpecHelper#:nodoc
-  def self.included(base)
-    base.class_eval do
-      include ActionMailer::Quoting
-      include ActionController::UrlWriter
-    end
-  end
-  
-  def setup_mailer
-    ActionMailer::Base.delivery_method = :test
-    ActionMailer::Base.perform_deliveries = true
-    @queue = ActionMailer::Base.deliveries = []
   end
 end
