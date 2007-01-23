@@ -1,5 +1,17 @@
 *SVN*
 
+* Remove useless code in #attribute_present? since 0 != blank?.  Closes #7249 [Josh Susser]
+
+* Fix minor doc typos. Closes #7157 [Josh Susser]
+
+* Fix incorrect usage of #classify when creating the eager loading join statement.  Closes #7044 [Josh Susser]
+
+* SQLServer: quote table name in indexes query.  #2928 [keithm@infused.org]
+
+* Subclasses of an abstract class work with single-table inheritance.  #5704, #7284 [BertG, nick+rails@ag.arizona.edu]
+
+* Make sure sqlite3 driver closes open connections on disconnect [Rob Rasmussen]
+
 * [DOC] clear up some ambiguity with the way has_and_belongs_to_many creates the default join table name.  #7072 [jeremymcanally]
 
 * change_column accepts :default => nil. Skip column options for primary keys.  #6956, #7048 [dcmanges, Jeremy Kemper]

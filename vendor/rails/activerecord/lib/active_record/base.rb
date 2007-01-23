@@ -817,8 +817,13 @@ module ActiveRecord #:nodoc:
         attribute_key_name.humanize
       end
 
-      def descends_from_active_record? # :nodoc:
-        superclass == Base || !columns_hash.include?(inheritance_column)
+      # True if this isn't a concrete subclass needing a STI type condition.
+      def descends_from_active_record?
+        if superclass.abstract_class?
+          superclass.descends_from_active_record?
+        else
+          superclass == Base || !columns_hash.include?(inheritance_column)
+        end
       end
 
 
@@ -1707,7 +1712,7 @@ module ActiveRecord #:nodoc:
       # nil nor empty? (the latter only applies to objects that respond to empty?, most notably Strings).
       def attribute_present?(attribute)
         value = read_attribute(attribute)
-        !value.blank? or value == 0
+        !value.blank?
       end
 
       # Returns true if the given attribute is in the attributes hash
