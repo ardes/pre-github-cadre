@@ -1,2 +1,2 @@
-class Recognition < UserEvent
+class Recognition < ActivatedUserEvent
 end

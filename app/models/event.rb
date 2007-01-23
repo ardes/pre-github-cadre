@@ -1,29 +1,33 @@
 require 'active_record/singleton'
 
 #
+# == Class heirachy for Event:
+#
 #  Event (readonly, belongs_to :user)
 #   |
 #   +-- Signup (creates a user)
 #   |
 #   +-- UserEvent (requires a user_id)
 #        |
-#        +-- WithSignupEvent (requires a signup)
+#        +-- WithSignupEvent (requires a signup and inactive user)
 #        |    |
 #        |    +-- Activation (activates a user account)
 #        |    |
-#        |    +-- FalseSignup (removes an inactive user account)
+#        |    +-- SignupCancellation (removes an inactive user account)
 #        |
-#        +-- Recognition (recognises a user based on cookie)
-#        |
-#        +-- Login (logs in a user)
-#        |
-#        +-- RequestResetPassword
-#        |
-#        +-- ResetPassword (resets a users password)
+#        +-- ActivatedUserEvent (requires an activated user)
+#             |
+#             +-- Recognition (recognises a user based on cookie)
+#             |
+#             +-- Login (logs in a user)
+#             |
+#             +-- PasswordResetRequest (delivers a password_reset link)
+#             |
+#             +-- PasswordReset (resets a users password)
 #
 #
-# GenerateKey (mixin) is used in 
-
+# Event::GenerateKey is included in Signup, PasswordResetRequest, Recognition and Login
+#
 class Event < ActiveRecord::Base
   belongs_to :user
   

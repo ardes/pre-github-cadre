@@ -1,3 +1,7 @@
+# Parent of Activation and FalseSignup.
+#
+# This class encapsulates the functionality of requiring a Signup event in
+# order to infer the user and create the event.
 class WithSignupEvent < UserEvent
   attr_protected :signup
   attr_accessor :signup, :signup_id, :signup_key

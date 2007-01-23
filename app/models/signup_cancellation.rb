@@ -1,0 +1,2 @@
+class SignupCancellation < WithSignupEvent
+end

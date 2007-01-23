@@ -1,2 +1,2 @@
-class Login < UserEvent
+class Login < ActivatedUserEvent
 end
