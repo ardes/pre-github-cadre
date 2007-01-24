@@ -122,6 +122,12 @@ context "A User updating their details" do
     @user.save
     @user.should_match_password_hash('wilma')
   end
+  
+  specify "should have email_confirmation == email, unless it is written to" do
+    @user.email_confirmation.should == @user.email
+    @user.email_confirmation = ''
+    @user.email_confirmation.should_not == @user.email
+  end
 end
 
 context "A User with an old password_algorithm" do

@@ -52,6 +52,11 @@ class User < ActiveRecord::Base
     !password.blank?
   end
   
+  # use the current email as confirmation if the confirmation is nil or false (note: a blank confirmation will be used)
+  def email_confirmation
+    @email_confirmation or email
+  end
+  
   # computes name from display_name, then email
   def name
     display_name or (email and email.sub('.',' ').sub(/@.*$/,'').titleize)
