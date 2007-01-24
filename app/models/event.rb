@@ -1,33 +1,15 @@
 require 'active_record/singleton'
 
-#
-# == Class heirachy for Event:
-#
-#  Event (readonly, belongs_to :user)
-#   |
-#   +-- Signup (creates a user)
-#   |
-#   +-- UserEvent (requires a user_id)
-#        |
-#        +-- WithSignupEvent (requires a signup and inactive user)
-#        |    |
-#        |    +-- Activation (activates a user account)
-#        |    |
-#        |    +-- SignupCancellation (removes an inactive user account)
-#        |
-#        +-- ActivatedUserEvent (requires an activated user)
-#             |
-#             +-- Recognition (recognises a user based on cookie)
-#             |
-#             +-- Login (logs in a user)
-#             |
-#             +-- PasswordResetRequest (delivers a password_reset link)
-#             |
-#             +-- PasswordReset (resets a users password)
-#
-#
-# Event::GenerateKey is included in Signup, PasswordResetRequest, Recognition and Login
-#
+#  Signup
+#  UserEvent
+#    NonActivatedUserEvent
+#      SignupCancellation
+#      Activation
+#    ActivatedUserEvent
+#      Recognition
+#      Login
+#      PasswordResetRequest
+#      PasswordReset
 class Event < ActiveRecord::Base
   belongs_to :user
   
@@ -38,7 +20,6 @@ class Event < ActiveRecord::Base
   # All events are readonly after they have been created
   after_create {|event| event.readonly!}
   def after_find; readonly!; end
-     
   
   # singleton container for class-wide properties
   class Properties < ActiveRecord::Base

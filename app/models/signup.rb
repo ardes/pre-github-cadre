@@ -3,13 +3,16 @@ class Signup < Event
   
   delegate *User.delegate_methods.push(:to => :user)
   
-  when_nil :user do |signup|
-    signup.build_user
+  # build user on demand
+  def user_with_build(*args)
+    user_without_build(*args) or build_user
   end
+  alias_method_chain :user, :build
   
   validates_associated :user
   
-  after_validation do |signup| # merge user errors
+  # merge user errors
+  after_validation do |signup|
     signup.user.errors.each {|attr, msg| signup.errors.add(attr, msg)} 
   end
   
