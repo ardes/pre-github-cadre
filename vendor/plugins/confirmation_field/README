@@ -1,6 +1,0 @@
-confirmation_field
-==================
-
-Adds some helpers for dealing with confirmation fields (a la validates_confirmation_of) at the view level.
-
-See init.rb and tests for more info
