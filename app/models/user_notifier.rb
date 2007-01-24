@@ -17,6 +17,14 @@ class UserNotifier < ActionMailer::Base
     @body[:user]  = user
   end
   
+  def reset_password(request, sent_at = Time.now)
+    apply_default_options(sent_at)
+    @subject        = "[#{CADRE_NAME}] Request to reset your password"
+    @recipients     = request.user.email_address
+    @body[:request] = request
+    @body[:user]    = request.user
+  end
+  
 protected
   def apply_default_options(sent_at)
     @from = CADRE_FROM
