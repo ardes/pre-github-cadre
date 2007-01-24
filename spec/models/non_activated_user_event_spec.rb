@@ -1,10 +1,10 @@
 require File.dirname(__FILE__) + '/../spec_helper'
 
-context "A WithSignupEvent (in general)" do
+context "A NonActivatedUserEvent (in general)" do
   fixtures :events
   
   setup do
-    @event = WithSignupEvent.new
+    @event = NonActivatedUserEvent.new
   end
   
   specify "gracefully loads :signup from :signup_id and :signup_key, unless it is set" do
@@ -23,11 +23,11 @@ context "A WithSignupEvent (in general)" do
   end
 end
 
-context "A new WithSignupEvent" do
+context "A new NonActivatedUserEvent" do
   fixtures :users, :events, :event_properties
 
   setup do
-    @event = WithSignupEvent.new :signup_id => 2, :signup_key => 'e3907e189595061ac246459ede9600d8' # begin with a valid signup
+    @event = NonActivatedUserEvent.new :signup_id => 2, :signup_key => 'e3907e189595061ac246459ede9600d8' # begin with a valid signup
   end
   
   specify "should be invalid when :signup is nil" do 

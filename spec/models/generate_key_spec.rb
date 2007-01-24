@@ -1,31 +1,36 @@
 require File.dirname(__FILE__) + '/../spec_helper'
 
-class EventWithGenerateKey < Event
+class GenerateKey < ActiveRecord::Base
   include Event::GenerateKey
+  self.table_name = 'events'
+  class Properties < ActiveRecord::Base
+    include ActiveRecord::Singleton
+    self.table_name = 'event_properties'
+  end
 end
 
-context "An Event class with GenerateKey mixin" do
+context "A class with GenerateKey mixin" do
   fixtures :event_properties
 
   specify "has the class-wide key_algorithm attribute" do
-    EventWithGenerateKey.key_algorithm.should == 'sha1' # event_properties is empty - so this will be the default value
+    GenerateKey.key_algorithm.should == 'sha1' # event_properties is empty - so this will be the default value
   end
   
   specify "allows setting the class-wide key_algorithm (with key_algorithm=)" do
-    EventWithGenerateKey.key_algorithm = 'md5'
-    EventWithGenerateKey.key_algorithm.should == 'md5'
+    GenerateKey.key_algorithm = 'md5'
+    GenerateKey.key_algorithm.should == 'md5'
   end
   
   specify "raises ArgumentError when setting key_algorithm with unsupported algorithm" do
-    lambda{ EventWithGenerateKey.key_algorithm = 'foo' }.should_raise ArgumentError
+    lambda{ GenerateKey.key_algorithm = 'foo' }.should_raise ArgumentError
   end
 end
 
-context "A new Event with GenerateKey mixin" do
+context "A new object with GenerateKey mixin" do
   fixtures :event_properties
   
   setup do
-    @event = EventWithGenerateKey.new
+    @event = GenerateKey.new
   end
   
   specify "should generate a key and key_hash on create" do
@@ -35,13 +40,13 @@ context "A new Event with GenerateKey mixin" do
   end
 end
 
-context "An existing Event with GenerateKey mixin" do
+context "An existing object with GenerateKey mixin" do
   fixtures :event_properties
   
   setup do
-    @event = EventWithGenerateKey.create
+    @event = GenerateKey.create
     @key = @event.key
-    @event = EventWithGenerateKey.find(@event.id) # reload from db
+    @event = GenerateKey.find(@event.id) # reload from db
   end
   
   specify "should not have a key" do
@@ -61,11 +66,11 @@ context "An existing Event with GenerateKey mixin" do
   end
   
   specify "should be findable with class find_by_id_and_key_hash" do
-    EventWithGenerateKey.find_by_id_and_key_hash(@event.id, @event.key_hash).should == @event
+    GenerateKey.find_by_id_and_key_hash(@event.id, @event.key_hash).should == @event
   end
   
   specify "should be findable with class find_by_id_and_key" do
-    EventWithGenerateKey.find_by_id_and_key(@event.id, @key).should == @event
+    GenerateKey.find_by_id_and_key(@event.id, @key).should == @event
   end
 end
 

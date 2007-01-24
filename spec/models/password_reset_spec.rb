@@ -7,7 +7,7 @@ context "A PasswordReset (in general)" do
     @event = PasswordReset.new
   end
   
-  specify "gracefully loads :signup from :signup_id and :signup_key, unless it is set" do
+  specify "gracefully loads :request from :request_id and :request_key, unless it is set" do
     @event.request.should_be_nil
     @event.request_id = 4
     @event.request.should_be_nil
