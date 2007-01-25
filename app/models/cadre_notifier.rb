@@ -1,4 +1,4 @@
-class UserNotifier < ActionMailer::Base
+class CadreNotifier < ActionMailer::Base
   include ActionController::UrlWriter
   default_url_options[:host] = CADRE_HOST
   

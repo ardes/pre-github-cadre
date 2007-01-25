@@ -5,6 +5,6 @@ class PasswordResetRequest < ActivatedUserEvent
   attr_protected.delete :user_id
   
   after_create do |request|
-    UserNotifier.deliver_requested_reset_password(request)
+    CadreNotifier.deliver_requested_reset_password(request)
   end
 end
