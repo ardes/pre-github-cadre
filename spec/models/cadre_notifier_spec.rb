@@ -18,6 +18,11 @@ context "CadreNotifier" do
     Signup.create :email => 'gumby@play.com', :password => 'rubber'
   end
 
+  specify "should not deliver signed_up(signup) on create Signup with :send_email => false" do
+    CadreNotifier.should_not_receive(:deliver_signed_up)
+    Signup.create :email => 'gumby@play.com', :password => 'rubber', :send_email => false
+  end
+
   specify "should deliver activated(user) on create Activation" do
     CadreNotifier.should_receive(:deliver_activated) {|activation| activation.user.should_be == users(:joe) }
     activation = Activation.new
