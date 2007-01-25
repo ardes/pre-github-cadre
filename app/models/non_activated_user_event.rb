@@ -11,7 +11,7 @@ class NonActivatedUserEvent < UserEvent
   end
   
   validate_on_create do |event|
-    event.errors.add(:signup, "is not valid") unless event.signup.is_a?(Signup) && !event.signup.new_record?
+    event.errors.add(:signup, "is not valid") unless event.signup && event.signup.saved?(Signup)
     event.errors.add(:user, 'is already activated') if event.user && event.user.activated?
   end
 end

@@ -57,6 +57,31 @@ context "A User (in general)" do
   end
 end
 
+context "A User being activated - with user.activate!(activation)" do
+  fixtures :users, :events
+  
+  setup do
+    @user = users(:joe)
+  end
+
+  specify "should succeed with a saved activation for that user, and set user.activation_id" do
+    activation = Activation.new
+    activation.signup = events(:signup_joe)
+    activation.save
+    @user.activate!(activation).should_be true
+    User.find(@user.id).activation_id.should == activation.id
+  end
+  
+  specify "should raise ArgumentError if activation is not for that user" do
+    lambda{ @user.activate!(events(:activation_fred)) }.should_raise ArgumentError, "activation's user must be this user"
+  end
+  
+  specify "should raise ArgumentError if activation is not a saved Activation" do
+    lambda{ @user.activate!(Event.new) }.should_raise ArgumentError, "activation must be a saved Activation"
+    lambda{ @user.activate!(Activation.new) }.should_raise ArgumentError, "activation must be a saved Activation"
+  end
+end
+
 context "A new User" do
   fixtures :user_properties, :users
 

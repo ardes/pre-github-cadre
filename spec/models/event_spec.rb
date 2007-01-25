@@ -14,7 +14,7 @@ end
 
 context "A new Event (and subclasses)" do
   setup do
-    @event = Event.new # start with a valid User
+    @event = Event.new
   end
 
   specify "should be invalid with a badly formed :ip_address" do
@@ -37,6 +37,12 @@ context "A new Event (and subclasses)" do
     @event.save
     @event.created_at.should_be_kind_of(Time)
   end
+  
+  specify "should return false from saved?(klass) irrespective of klass" do
+    @event.should_not_be_saved
+    @event.should_not_be_saved Event
+    @event.should_not_be_saved Signup
+  end
 end
 
 context "An existing Event (and subclasses)" do
@@ -52,5 +58,12 @@ context "An existing Event (and subclasses)" do
   
   specify "should belong_to a :user" do
     @event.user.should_be_kind_of(User)
+  end
+  
+  specify "should return true from saved?(klass) if a descendent of klass" do
+    @event.should_be_saved
+    @event.should_be_saved Event
+    @event.should_be_saved Signup
+    @event.should_not_be_saved Activation
   end
 end

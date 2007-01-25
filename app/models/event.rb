@@ -21,6 +21,11 @@ class Event < ActiveRecord::Base
   after_create {|event| event.readonly!}
   def after_find; readonly!; end
   
+  # return true if this is a saved record of the specifed class (default Event)
+  def saved?(klass = Event)
+    is_a?(klass) && !new_record?
+  end
+  
   # singleton container for class-wide properties
   class Properties < ActiveRecord::Base
     include ActiveRecord::Singleton

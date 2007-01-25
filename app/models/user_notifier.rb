@@ -2,7 +2,7 @@ class UserNotifier < ActionMailer::Base
   include ActionController::UrlWriter
   default_url_options[:host] = CADRE_HOST
   
-  def activate_your_account(signup, sent_at = Time.now)
+  def signed_up(signup, sent_at = Time.now)
     apply_default_options(sent_at)
     @subject        = "[#{CADRE_NAME}] Please activate your new account"
     @recipients     = signup.user.email_address
@@ -10,14 +10,15 @@ class UserNotifier < ActionMailer::Base
     @body[:user]    = signup.user
   end
   
-  def welcome_to_cadre(user, sent_at = Time.now)
+  def activated(activation, sent_at = Time.now)
     apply_default_options(sent_at)
-    @subject      = "[#{CADRE_NAME}] Welcome to your account"
-    @recipients   = user.email_address
-    @body[:user]  = user
+    @subject            = "[#{CADRE_NAME}] Welcome to your account"
+    @recipients         = activation.user.email_address
+    @body[:activation]  = activation
+    @body[:user]        = activation.user
   end
   
-  def reset_password(request, sent_at = Time.now)
+  def requested_reset_password(request, sent_at = Time.now)
     apply_default_options(sent_at)
     @subject        = "[#{CADRE_NAME}] Request to reset your password"
     @recipients     = request.user.email_address
@@ -27,10 +28,10 @@ class UserNotifier < ActionMailer::Base
   
 protected
   def apply_default_options(sent_at)
-    @from = CADRE_FROM
-    @sent_on = sent_at
-    @body ||= {}
-    @body = {:cadre_name => CADRE_NAME, :cadre_home => CADRE_HOME}
-    @headers = {}
+    @from     = CADRE_FROM
+    @sent_on  = sent_at
+    @headers  ||= {}
+    @body     ||= {}
+    @body     = {:cadre_name => CADRE_NAME, :cadre_home => CADRE_HOME}
   end
 end

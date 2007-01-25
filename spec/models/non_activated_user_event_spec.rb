@@ -27,7 +27,7 @@ context "A new NonActivatedUserEvent" do
   fixtures :users, :events, :event_properties
 
   setup do
-    @event = NonActivatedUserEvent.new :signup_id => 2, :signup_key => 'e3907e189595061ac246459ede9600d8' # begin with a valid signup
+    @event = NonActivatedUserEvent.new :signup_id => 2, :signup_key => 'e3907e189595061ac246459ede9600d8' # begin valid
   end
   
   specify "should be invalid when :signup is nil" do 
