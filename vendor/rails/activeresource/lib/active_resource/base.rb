@@ -45,13 +45,17 @@ module ActiveResource
       # Sets the resource prefix
       #  prefix/collectionname/1.xml
       def prefix=(value = '/')
+        # Replace :placeholders with '#{embedded options[:lookups]}'
         prefix_call = value.gsub(/:\w+/) { |key| "\#{options[#{key}]}" }
-        instance_eval <<-end_eval, __FILE__, __LINE__
+
+        # Redefine the new methods.
+        code = <<-end_code
           def prefix_source() "#{value}" end
           def prefix(options={}) "#{prefix_call}" end
-        end_eval
+        end_code
+        silence_warnings { instance_eval code, __FILE__, __LINE__ }
       rescue
-        logger.error "Couldn't set prefix: #{$!}\n  #{method_decl}"
+        logger.error "Couldn't set prefix: #{$!}\n  #{code}"
         raise
       end
 
@@ -69,6 +73,21 @@ module ActiveResource
       end
 
       alias_method :set_primary_key, :primary_key=  #:nodoc:
+
+      # Create a new resource instance and request to the remote service
+      # that it be saved.  This is equivalent to the following simultaneous calls:
+      #
+      #   ryan = Person.new(:first => 'ryan')
+      #   ryan.save
+      #
+      # The newly created resource is returned.  If a failure has occurred an
+      # exception will be raised (see save).  If the resource is invalid and
+      # has not been saved then <tt>resource.valid?</tt> will return <tt>false</tt>,
+      # while <tt>resource.new?</tt> will still return <tt>true</tt>.
+      #      
+      def create(attributes = {}, prefix_options = {})
+        returning(self.new(attributes, prefix_options)) { |res| res.save }        
+      end
 
       # Core method for finding resources.  Used similarly to ActiveRecord's find method.
       #  Person.find(1) # => GET /people/1.xml
@@ -220,7 +239,7 @@ module ActiveResource
               resource = find_or_create_resource_for(key)
               resource.new(value)
             when ActiveResource::Base
-              value.class.new(value.attributes)
+              value.class.new(value.attributes, value.prefix_options)
             else
               value.dup rescue value
           end
