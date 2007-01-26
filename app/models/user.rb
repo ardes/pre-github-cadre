@@ -7,7 +7,7 @@ class User < ActiveRecord::Base
   has_one :signup
   belongs_to :activation
   
-  attr_protected :password_hash, :password_salt, :password_algorithm
+  attr_protected :password_hash, :password_salt, :password_algorithm, :activation_id
   attr_accessor :password
   
   validates_presence_of :email
@@ -22,12 +22,6 @@ class User < ActiveRecord::Base
   validates_format_of :display_name, :allow_nil => true, :with => /^[a-z]{2}(?:[.'\-\w ]+)?$/i
   
   before_save {|user| user.hash_password(user.password) if user.password_supplied?}
-  
-  # list of methods that would typically be delegated to this class, which can then be used as follows (in the other class):
-  #  delegate *User.delegate_methods.push(:to => :user)
-  def self.delegate_methods
-    @delegate_methods ||= [:email, :email_confirmation, :password, :password_confirmation, :display_name].collect{|m| [m, "#{m}=".to_sym]}.flatten
-  end
   
   # singleton container for the class-wide password algorithm
   class Properties < ActiveRecord::Base

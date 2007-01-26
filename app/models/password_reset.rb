@@ -1,20 +1,25 @@
+require 'key_event/has'
+
 class PasswordReset < ActivatedUserEvent
-  attr_protected :request
-  attr_accessor :request, :request_id, :request_key
+  include KeyEvent::Has
   
-  def request
-    @request ||= (PasswordResetRequest.find_by_id_and_key(request_id, request_key) rescue nil)
-  end
-    
-  before_validation do |reset|
-    reset.user = reset.request.user if reset.request
-  end
+  has_key_event :request, :class => PasswordResetRequest
   
-  validate_on_create do |reset|
-    reset.errors.add(:request, "is not valid") unless reset.request.is_a?(PasswordResetRequest) && !reset.request.new_record?
+  delegate :password, :password=, :password_confirmation, :password_confirmation=, :to => :user
+  
+  validates_associated :user
+  
+  def user_with_request(*args)
+    user_without_request(*args) or ((self.user = request.user) rescue raise ArgumentError, "assign request before accessing user")
+  end
+  alias_method_chain :user, :request
+
+  # merge user errors
+  after_validation do |signup|
+    signup.user.errors.each {|attr, msg| signup.errors.add(attr, msg)} 
   end
   
   after_create do |reset|
-    reset.user.reset_password!
+    CadreNotifier.deliver_reset_password(reset) if reset.user.save
   end
 end

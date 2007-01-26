@@ -1,9 +1,13 @@
+require 'key_event/generate'
+
 class Signup < Event
-  include Event::GenerateKey
+  include KeyEvent::Generate
   
-  delegate *User.delegate_methods.push(:to => :user)
+  delegate  :display_name, :display_name=, :email, :email=, :email_confirmation, :email_confirmation=,
+            :password, :password=, :password_confirmation, :password_confirmation=,
+            :to => :user
   
-  # build user on demand
+  # build user on demand (because of delegation above)
   def user_with_build(*args)
     user_without_build(*args) or build_user
   end

@@ -1,17 +1,20 @@
+require 'key_event/has'
+
 class NonActivatedUserEvent < UserEvent
-  attr_protected :signup
-  attr_accessor :signup, :signup_id, :signup_key
+  include KeyEvent::Has
   
-  def signup
-    @signup ||= (Signup.find_by_id_and_key(signup_id, signup_key) rescue nil)
+  has_key_event :signup
+  
+  def user_with_signup(*args)
+    user_without_signup(*args) or ((self.user = signup.user) rescue raise ArgumentError, "assign signup before accessing user")
   end
-    
+  alias_method_chain :user, :signup
+  
   before_validation do |event|
-    event.user = event.signup.user if event.signup
+    event.user # load user and user_id
   end
   
   validate_on_create do |event|
-    event.errors.add(:signup, "is not valid") unless event.signup && event.signup.saved?(Signup)
     event.errors.add(:user, 'is already activated') if event.user && event.user.activated?
   end
 end

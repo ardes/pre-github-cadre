@@ -27,11 +27,11 @@ context "A User (in general)" do
   end
   
   specify "should protect :activation_id, :password_hash, :password_salt and :password_algorithm from mass assignment" do
-    protected_attrs = [:activation_id, :password_hash, :password_salt, :password_algorithm]
-    @user.attributes = protected_attrs.inject({}){|h,a| h.merge(a => 'foo')}
-    protected_attrs.each do |a|
-      @user.send(a).should_not_be 'foo'
-    end
+    @user.attributes = {:activation_id => 666, :password_hash => '666', :password_salt => '666', :password_algorithm => '666'}
+    @user.activation_id.should_not == 666
+    @user.password_hash.should_not == '666'
+    @user.password_salt.should_not == '666'
+    @user.password_algorithm.should_not == '666'
   end
   
   specify "should derive :name from :display_name or :email" do

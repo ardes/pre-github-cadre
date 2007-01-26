@@ -1,8 +1,8 @@
 require File.dirname(__FILE__) + '/../spec_helper'
 
 context "The Signup class" do
-  specify "should have GenerateKey mixin" do
-    Signup.included_modules.should_include Event::GenerateKey
+  specify "should have KeyEvent::Generate mixin" do
+    Signup.included_modules.should_include KeyEvent::Generate
   end
 end
 

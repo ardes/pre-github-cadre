@@ -3,7 +3,7 @@ require File.dirname(__FILE__) + '/../spec_helper'
 module CadreNotifierSpecHelper
   def self.included(base)
     base.class_eval do
-      fixtures :events, :users
+      fixtures :events, :users, :user_properties, :event_properties
       include ActionController::UrlWriter
       default_url_options[:host] = CADRE_HOST
     end
@@ -33,6 +33,12 @@ context "CadreNotifier" do
   specify "should deliver requested_reset_password(request) on create PasswordResetRequest" do
     CadreNotifier.should_receive(:deliver_requested_reset_password) {|request| request.user.should_be == users(:fred)}
     PasswordResetRequest.create :user_id => users(:fred).id
+  end
+  
+  specify "should deliver reset_password(reset) on create PasswordReset" do
+    CadreNotifier.should_receive(:deliver_reset_password) {|reset| reset.user.should_be == users(:fred)}
+    request = PasswordResetRequest.create :user_id => users(:fred).id
+    PasswordReset.create :request_id => request.id, :request_key => request.key, :password => 'foobar'
   end
 end
 
@@ -136,5 +142,32 @@ context "CadreNotifier: requested_reset_password(request[, sent_at])" do
   
   specify "should contain reset_password url in mail body" do
     @mail.body.should_include reset_password_url(:request_id => @request.id, :request_key => @request.key)
+  end
+end
+
+context "CadreNotifier: reset_password(reset[, sent_at])" do
+  include CadreNotifierSpecHelper
+  
+  setup do
+    @reset = PasswordReset.create :request_id => events(:password_reset_request_fred).id, :request_key => '34a350336e79e39e2d3244cee34f791c', :password => 'foobar'
+    @mail = CadreNotifier.create_reset_password(@reset)
+  end
+  
+  specify "should have date == sent_at argument if supplied" do
+    sent_at = Time.now - 1.month
+    @mail = CadreNotifier.create_reset_password(@reset, sent_at)
+    @mail.date == sent_at
+  end  
+  
+  specify "should have to == user's email" do
+    @mail.to.should == ["fred@gmail.com"]
+  end
+  
+  specify "should have subject == '[CADRE_NAME] Your password was reset'" do
+    @mail.subject.should == "[#{CADRE_NAME}] Your password was reset"
+  end
+  
+  specify "should have from == CADRE_FROM" do
+    @mail.from.should == [CADRE_FROM]
   end
 end

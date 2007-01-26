@@ -1,25 +1,34 @@
 require File.dirname(__FILE__) + '/../spec_helper'
 
+context "The PasswordReset class" do
+  specify "should have event_key :request" do
+    PasswordReset.included_modules.should_include KeyEvent::Has
+    PasswordReset.instance_methods.should_include "request"
+  end
+end
+
 context "A PasswordReset (in general)" do
-  fixtures :events
+  fixtures :events, :users
   
   setup do
     @event = PasswordReset.new
   end
   
-  specify "gracefully loads :request from :request_id and :request_key, unless it is set" do
-    @event.request.should_be_nil
-    @event.request_id = 4
-    @event.request.should_be_nil
-    @event.request_key = '34a350336e79e39e2d3244cee34f791c'
-    @event.request.should == events(:password_reset_request_fred)
-    @event.request = 'foo'
-    @event.request.should == 'foo'
+  specify "should raise ArgumentError if user is accessed without request being set" do
+    lambda{ @event.user }.should_raise ArgumentError, "assign request before accessing user"
+  end
+    
+  specify "should load user from request" do
+    @event.request = events(:password_reset_request_fred)
+    @event.user.should == users(:fred)
   end
   
-  specify "should protect :request from mass assignment" do
-    @event.attributes = {:request => events(:password_reset_request_fred)}
-    @event.request.should_be_nil
+  specify "should delegate :password and :password_confirmation (getter and setter) to :user" do
+    @event.request = events(:password_reset_request_fred) # allow load user
+    (@event.password = 'foo').should == @event.user.password
+    (@event.user.password = 'foo').should == @event.password
+    (@event.password_confirmation = 'foo').should == @event.user.password_confirmation
+    (@event.user.password_confirmation = 'foo').should == @event.password_confirmation
   end
 end
 
@@ -27,7 +36,7 @@ context "A new PasswordReset" do
   fixtures :users, :events, :event_properties
 
   setup do
-    @event = PasswordReset.new :request_id => 4, :request_key => '34a350336e79e39e2d3244cee34f791c' # begin with a valid PasswordReset
+    @event = PasswordReset.new :request_id => 4, :request_key => '34a350336e79e39e2d3244cee34f791c', :password => 'foobar' # begin with a valid PasswordReset
   end
   
   specify "should be invalid when :request is nil" do 
@@ -42,7 +51,24 @@ context "A new PasswordReset" do
     @event.errors.full_messages.should_include "Request is not valid"
   end
   
-  specify "should be valid with existing request" do
+  specify "should be invalid without a valid :user" do
+    @event.user = User.new
+    @event.should_not_be_valid
+    @event.errors.full_messages.should_include "User is invalid"
+  end
+  
+  specify "should merge inavlid user errors into errors" do
+    @event.attributes = {:password => 'gunk', :password_confirmation => '8908989089080'}
+    @event.should_not_be_valid
+    @event.errors.full_messages.to_set.should == @event.user.errors.full_messages.to_set << 'User is invalid'
+  end
+  
+  specify "should be valid with saved request" do
     @event.should_be_valid
+  end
+  
+  specify "should change user's password on create" do
+    @event.save
+    User.find_by_email(@event.user.email).authenticate_password('foobar').should == true
   end
 end

@@ -26,6 +26,14 @@ class CadreNotifier < ActionMailer::Base
     @body[:user]    = request.user
   end
   
+  def reset_password(reset, sent_at = Time.now)
+    apply_default_options(sent_at)
+    @subject      = "[#{CADRE_NAME}] Your password was reset"
+    @recipients   = reset.user.email_address
+    @body[:reset] = reset
+    @body[:user]  = reset.user
+  end
+  
 protected
   def apply_default_options(sent_at)
     @from     = CADRE_FROM

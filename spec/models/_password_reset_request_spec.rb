@@ -1,5 +1,11 @@
 require File.dirname(__FILE__) + '/../spec_helper'
 
+context "The PasswordResetRequest class" do
+  specify "should have KeyEvent::Generate mixin" do
+    PasswordResetRequest.included_modules.should_include KeyEvent::Generate
+  end
+end
+
 context "A new PasswordResetRequest (and subclasses)" do
   fixtures :events
   
