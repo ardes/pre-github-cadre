@@ -28,6 +28,10 @@ context "A new Event (and subclasses)" do
     @event.should_be_valid
   end
   
+  specify "should be valid" do
+    @event.should_be_valid
+  end
+  
   specify "should become readonly after create" do
     @event.save
     @event.should_be_readonly
