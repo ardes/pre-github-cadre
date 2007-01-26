@@ -6,10 +6,6 @@ class NonActivatedUserEvent < UserEvent
   end
   alias_method_chain :user, :signup
   
-  before_validation do |event|
-    event.user # load user and user_id
-  end
-  
   validate_on_create do |event|
     event.errors.add(:user, 'is already activated') if event.user && event.user.activated?
   end

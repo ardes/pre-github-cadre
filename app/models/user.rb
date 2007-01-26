@@ -68,7 +68,8 @@ class User < ActiveRecord::Base
   def activate!(activation)
     raise ArgumentError, "activation must be a saved Activation" unless activation.saved?(Activation)
     raise ArgumentError, "activation's user must be this user" unless self.id == activation.user_id
-    update_attribute :activation_id, activation.id
+    self.activation_id = activation.id
+    save!
   end
   
   # Authenticates the given password against the one in the database.  Returns 
