@@ -1,16 +1,20 @@
 require 'active_record/singleton'
+require 'key_event/has'
 
-#  Signup
-#  UserEvent
-#    NonActivatedUserEvent
-#      SignupCancellation
-#      Activation
-#    ActivatedUserEvent
-#      Recognition
-#      Login
-#      PasswordResetRequest
-#      PasswordReset
+# Class heirachy:
+#   Event
+#     Signup
+#     UserEvent
+#       NonActivatedUserEvent
+#         SignupCancellation
+#         Activation
+#       ActivatedUserEvent
+#         Recognition
+#         Login
+#         PasswordResetRequest
+#         PasswordReset
 class Event < ActiveRecord::Base
+  extend KeyEvent::Has
   belongs_to :user
   
   attr_protected :user_id, :created_at

@@ -1,8 +1,4 @@
-require 'key_event/has'
-
 class PasswordReset < ActivatedUserEvent
-  include KeyEvent::Has
-  
   has_key_event :request, :class => PasswordResetRequest
   
   delegate :password, :password=, :password_confirmation, :password_confirmation=, :to => :user

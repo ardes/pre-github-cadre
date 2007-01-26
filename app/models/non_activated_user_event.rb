@@ -1,8 +1,4 @@
-require 'key_event/has'
-
 class NonActivatedUserEvent < UserEvent
-  include KeyEvent::Has
-  
   has_key_event :signup
   
   def user_with_signup(*args)

@@ -2,8 +2,9 @@ require File.dirname(__FILE__) + '/../spec_helper'
 
 context "The NonActivatedUserEvent class" do
   specify "should have event_key :signup" do
-    NonActivatedUserEvent.included_modules.should_include KeyEvent::Has
-    NonActivatedUserEvent.instance_methods.should_include "signup"
+    [:signup, :signup=, :signup_id, :signup_id=, :signup_key, :signup_key=].each do |m|
+      NonActivatedUserEvent.instance_methods.should_include m.to_s
+    end
   end
 end
 

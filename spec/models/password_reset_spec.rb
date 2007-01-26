@@ -2,8 +2,9 @@ require File.dirname(__FILE__) + '/../spec_helper'
 
 context "The PasswordReset class" do
   specify "should have event_key :request" do
-    PasswordReset.included_modules.should_include KeyEvent::Has
-    PasswordReset.instance_methods.should_include "request"
+    [:request, :request=, :request_id, :request_id=, :request_key, :request_key=].each do |m|
+      PasswordReset.instance_methods.should_include m.to_s
+    end
   end
 end
 
