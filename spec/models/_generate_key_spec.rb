@@ -1,20 +1,20 @@
 require File.dirname(__FILE__) + '/../spec_helper'
-require RAILS_ROOT + "/spec/fixtures/key_event"
+require RAILS_ROOT + "/spec/fixtures/my_key_event"
 
 context "An Event with Event::KeyEvent mixin" do
   fixtures :event_properties
 
   specify "has the class-wide key_algorithm attribute" do
-    KeyEvent.key_algorithm.should == 'sha1' # event_properties is empty - so this will be the default value
+    MyKeyEvent.key_algorithm.should == 'sha1' # event_properties is empty - so this will be the default value
   end
   
   specify "allows setting the class-wide key_algorithm (with key_algorithm=)" do
-    KeyEvent.key_algorithm = 'md5'
-    KeyEvent.key_algorithm.should == 'md5'
+    MyKeyEvent.key_algorithm = 'md5'
+    MyKeyEvent.key_algorithm.should == 'md5'
   end
   
   specify "raises ArgumentError when setting key_algorithm with unsupported algorithm" do
-    lambda{ KeyEvent.key_algorithm = 'foo' }.should_raise ArgumentError
+    lambda{ MyKeyEvent.key_algorithm = 'foo' }.should_raise ArgumentError
   end
 end
 
@@ -22,7 +22,7 @@ context "A new object with Event::KeyEvent mixin" do
   fixtures :event_properties
   
   setup do
-    @event = KeyEvent.new
+    @event = MyKeyEvent.new
   end
   
   specify "should generate a key and key_hash on create" do
@@ -36,9 +36,9 @@ context "An existing event with Event::KeyEvent mixin" do
   fixtures :event_properties
   
   setup do
-    @event = KeyEvent.create
+    @event = MyKeyEvent.create
     @key = @event.key
-    @event = KeyEvent.find(@event.id) # reload from db
+    @event = MyKeyEvent.find(@event.id) # reload from db
   end
   
   specify "should not have a key" do
@@ -58,11 +58,11 @@ context "An existing event with Event::KeyEvent mixin" do
   end
   
   specify "should be findable with class find_by_id_and_key_hash" do
-    KeyEvent.find_by_id_and_key_hash(@event.id, @event.key_hash).should == @event
+    MyKeyEvent.find_by_id_and_key_hash(@event.id, @event.key_hash).should == @event
   end
   
   specify "should be findable with class find_by_id_and_key" do
-    KeyEvent.find_by_id_and_key(@event.id, @key).should == @event
+    MyKeyEvent.find_by_id_and_key(@event.id, @key).should == @event
   end
 end
 

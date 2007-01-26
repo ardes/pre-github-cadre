@@ -4,7 +4,7 @@ require RAILS_ROOT + '/spec/fixtures/has_key_event'
 context "An event with Event::HasKeyEvent mixin (in general)" do
   setup do
     @event = HasKeyEvent.new
-    @key_event = KeyEvent.create
+    @key_event = MyKeyEvent.create
   end
   
   specify "loads :key_event from :key_event_id and :key_event_key, if there is a matching KeyEvent" do
@@ -40,7 +40,7 @@ end
 
 context "A new Event::HasKeyEvent mixin" do
   setup do
-    @key_event = KeyEvent.create
+    @key_event = MyKeyEvent.create
     @event = HasKeyEvent.new :key_event_id => @key_event.id, :key_event_key => @key_event.key # begin valid
   end
   
@@ -51,7 +51,7 @@ context "A new Event::HasKeyEvent mixin" do
   end
   
   specify "should be invalid when :key_event is a new record" do
-    @event.key_event = KeyEvent.new
+    @event.key_event = MyKeyEvent.new
     @event.should_not_be_valid
     @event.errors.full_messages.should_include "Key event is not valid"
   end

@@ -1,21 +1,14 @@
-require 'event/has_key'
-require RAILS_ROOT + '/spec/fixtures/key_event'
+require RAILS_ROOT + '/spec/fixtures/my_key_event'
 
-class HasKeyEvent < Event
-  include Event::HasKey
-  
-  has_key_event :key_event
+class HasKeyEvent < Event  
+  has_key_event :key_event, :class => MyKeyEvent
   
   def key_event_ip_address=(arg)
-    key_event.ip_address = arg
-  rescue
-    raise ArgumentError, "key_event must be set"
+    (key_event.ip_address = arg) rescue raise ArgumentError, "key_event must be set"
   end
   
   def key_event_ip_address
-    key_event.ip_address
-  rescue
-    raise ArgumentError, "key_event must be set"
+    key_event.ip_address rescue raise ArgumentError, "key_event must be set"
   end
   
   # for testing atributes=
