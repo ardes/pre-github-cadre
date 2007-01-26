@@ -1,36 +1,28 @@
 require File.dirname(__FILE__) + '/../spec_helper'
+require RAILS_ROOT + "/spec/fixtures/key_event"
 
-class GenerateKey < ActiveRecord::Base
-  include Event::GenerateKey
-  self.table_name = 'events'
-  class Properties < ActiveRecord::Base
-    include ActiveRecord::Singleton
-    self.table_name = 'event_properties'
-  end
-end
-
-context "A class with GenerateKey mixin" do
+context "An Event with Event::KeyEvent mixin" do
   fixtures :event_properties
 
   specify "has the class-wide key_algorithm attribute" do
-    GenerateKey.key_algorithm.should == 'sha1' # event_properties is empty - so this will be the default value
+    KeyEvent.key_algorithm.should == 'sha1' # event_properties is empty - so this will be the default value
   end
   
   specify "allows setting the class-wide key_algorithm (with key_algorithm=)" do
-    GenerateKey.key_algorithm = 'md5'
-    GenerateKey.key_algorithm.should == 'md5'
+    KeyEvent.key_algorithm = 'md5'
+    KeyEvent.key_algorithm.should == 'md5'
   end
   
   specify "raises ArgumentError when setting key_algorithm with unsupported algorithm" do
-    lambda{ GenerateKey.key_algorithm = 'foo' }.should_raise ArgumentError
+    lambda{ KeyEvent.key_algorithm = 'foo' }.should_raise ArgumentError
   end
 end
 
-context "A new object with GenerateKey mixin" do
+context "A new object with Event::KeyEvent mixin" do
   fixtures :event_properties
   
   setup do
-    @event = GenerateKey.new
+    @event = KeyEvent.new
   end
   
   specify "should generate a key and key_hash on create" do
@@ -40,13 +32,13 @@ context "A new object with GenerateKey mixin" do
   end
 end
 
-context "An existing object with GenerateKey mixin" do
+context "An existing event with Event::KeyEvent mixin" do
   fixtures :event_properties
   
   setup do
-    @event = GenerateKey.create
+    @event = KeyEvent.create
     @key = @event.key
-    @event = GenerateKey.find(@event.id) # reload from db
+    @event = KeyEvent.find(@event.id) # reload from db
   end
   
   specify "should not have a key" do
@@ -66,11 +58,11 @@ context "An existing object with GenerateKey mixin" do
   end
   
   specify "should be findable with class find_by_id_and_key_hash" do
-    GenerateKey.find_by_id_and_key_hash(@event.id, @event.key_hash).should == @event
+    KeyEvent.find_by_id_and_key_hash(@event.id, @event.key_hash).should == @event
   end
   
   specify "should be findable with class find_by_id_and_key" do
-    GenerateKey.find_by_id_and_key(@event.id, @key).should == @event
+    KeyEvent.find_by_id_and_key(@event.id, @key).should == @event
   end
 end
 
