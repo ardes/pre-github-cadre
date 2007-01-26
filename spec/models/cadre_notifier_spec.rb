@@ -108,8 +108,8 @@ context "CadreNotifier: activated(activation[, sent_at])" do
     @mail.body.should_include request_reset_password_url(:user_id => @activation.user.id)
   end
   
-  specify "should contain edit_account url in mail body" do
-    @mail.body.should_include edit_account_url
+  specify "should contain account url in mail body" do
+    @mail.body.should_include account_url
   end
 end
 
