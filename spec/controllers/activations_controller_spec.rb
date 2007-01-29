@@ -9,7 +9,7 @@ context "Routes for the ActivationsController should map" do
   end
 
   specify "named route: activate {:signup_id => 1, :signup_key => 'key'} to /activate/1/key" do
-    activate_path(:signup_id => 1, :signup_key => 'key').should == '/activate/1/key'
+    activate_path(1, 'key').should == '/activate/1/key'
   end
 
   specify "/activations/new to {:controller => 'activations', :action => 'new'}" do
