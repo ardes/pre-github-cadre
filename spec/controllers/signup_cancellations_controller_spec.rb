@@ -15,4 +15,29 @@ context "Routes for the SignupCancellationsController" do
   specify "should route '/signup_cancellations/new' to {:controller => 'signup_cancellations', :action => 'new'}" do
     '/signup_cancellations/new'.should_route_to :controller => 'signup_cancellations', :action => 'new'
   end
+
+  specify "{ :controller => 'signup_cancellations', :action => 'show', :id => 1 } to /signup_cancellations/1" do
+    route_for(:controller => "signup_cancellations", :action => "show", :id => 1).should_eql "/signup_cancellations/1"
+  end
+
+  specify "{ :controller => 'signup_cancellations', :action => 'edit', :id => 1 } to /signup_cancellations/1;edit" do
+    route_for(:controller => "signup_cancellations", :action => "edit", :id => 1).should_eql "/signup_cancellations/1;edit"
+  end
+
+  specify "{ :controller => 'signup_cancellations', :action => 'update', :id => 1} to /signup_cancellations/1" do
+    route_for(:controller => "signup_cancellations", :action => "update", :id => 1).should_eql "/signup_cancellations/1"
+  end
+
+  specify "{ :controller => 'signup_cancellations', :action => 'destroy', :id => 1} to /signup_cancellations/1" do
+    route_for(:controller => "signup_cancellations", :action => "destroy", :id => 1).should_eql "/signup_cancellations/1"
+  end
+end
+
+
+context "The SignupCancellationsController class" do
+  controller_name :signup_cancellations
+  # this is here so if we change the inheritance we need to write more tests
+  specify "should inherit from EventsController" do
+    SignupCancellationsController.ancestors.should_include EventsController
+  end
 end

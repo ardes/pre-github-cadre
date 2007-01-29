@@ -16,10 +16,6 @@ context "Routes for the ActivationsController should map" do
     '/activations/new'.should_route_to :controller => 'activations', :action => 'new'
   end
   
-  specify "{ :controller => 'activations', :action => 'new' } to /activations/new" do
-    route_for(:controller => "activations", :action => "new").should_eql "/activations/new"
-  end
-  
   specify "{ :controller => 'activations', :action => 'show', :id => 1 } to /activations/1" do
     route_for(:controller => "activations", :action => "show", :id => 1).should_eql "/activations/1"
   end
@@ -34,5 +30,14 @@ context "Routes for the ActivationsController should map" do
   
   specify "{ :controller => 'activations', :action => 'destroy', :id => 1} to /activations/1" do
     route_for(:controller => "activations", :action => "destroy", :id => 1).should_eql "/activations/1"
+  end
+end
+
+
+context "The ActivationController class" do
+  controller_name :activations
+  # this is here so if we change the inheritance we need to write more tests
+  specify "should inherit from EventsController" do
+    ActivationsController.ancestors.should_include EventsController
   end
 end

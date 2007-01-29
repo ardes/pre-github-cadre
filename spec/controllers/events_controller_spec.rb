@@ -243,7 +243,7 @@ context "Requesting /events using POST" do
   end
   
   specify "should create a new event" do
-    Event.should_receive(:new).with({'name' => 'Event'}).and_return(@mock_event)
+    Event.should_receive(:new).with({'name' => 'Event', 'ip_address' => '0.0.0.0'}).and_return(@mock_event)
     do_post
   end
 
