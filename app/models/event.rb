@@ -1,9 +1,11 @@
 require 'active_record/singleton'
+require 'active_record/record_dependency'
 require 'key_event/has'
 
 # Class heirachy:
 #   Event
 #     Signup
+#       ActivationSignup
 #     UserEvent
 #       NonActivatedUserEvent
 #         SignupCancellation
@@ -14,6 +16,7 @@ require 'key_event/has'
 #         PasswordResetRequest
 #         PasswordReset
 class Event < ActiveRecord::Base
+  include ActiveRecord::RecordDependency
   extend KeyEvent::Has
   belongs_to :user
   
@@ -22,8 +25,15 @@ class Event < ActiveRecord::Base
   validates_format_of :ip_address, :allow_nil => true, :with => /\b(?:(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.){3}(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\b/
   
   # All events are readonly after they have been created
-  after_create {|event| event.readonly!}
-  def after_find; readonly!; end
+  def create(*args)
+    result = super(*args)
+  ensure
+    readonly! if result
+  end
+  
+  def after_find;
+    readonly!;
+  end
   
   # return true if this is a saved record of the specifed class (default Event)
   def saved?(klass = Event)

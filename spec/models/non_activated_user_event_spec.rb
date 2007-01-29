@@ -15,13 +15,13 @@ context "A NonActivatedUserEvent (in general)" do
     @event = NonActivatedUserEvent.new
   end
   
-  specify "should raise ArgumentError if user is accessed before signup is set" do
-    lambda{ @event.user }.should_raise ArgumentError, 'assign signup before accessing user'
-  end
-  
   specify "should load user from signup" do
     @event.signup = events(:signup_fred)
     @event.user.should == users(:fred)
+  end
+
+  specify "should return nil user if accessed before signup is set" do
+    @event.user.should_be_nil
   end
 end
   

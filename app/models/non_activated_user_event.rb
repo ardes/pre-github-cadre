@@ -2,7 +2,7 @@ class NonActivatedUserEvent < UserEvent
   has_key_event :signup
   
   def user_with_signup(*args)
-    user_without_signup(*args) or ((self.user = signup.user) rescue raise ArgumentError, "assign signup before accessing user")
+    user_without_signup(*args) or self.user = signup.user rescue nil
   end
   alias_method_chain :user, :signup
   

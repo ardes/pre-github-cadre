@@ -16,9 +16,7 @@ class Signup < Event
   validates_associated :user
   
   # merge user errors
-  after_validation do |signup|
-    signup.user.errors.each {|attr, msg| signup.errors.add(attr, msg)} 
-  end
+  after_validation {|signup| signup.user.errors.each {|a, m| signup.errors.add(a, m)}}
   
   after_create do |signup|
     CadreNotifier.deliver_signed_up(signup) if signup.send_email?

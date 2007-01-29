@@ -8,6 +8,8 @@ ActionController::Routing::Routes.draw do |map|
   map.cancel_signup 'cancel/:signup_id/:signup_key', :controller => 'signup_cancellations', :action => 'new'
   map.resources :signup_cancellations
   
+  map.resources :activation_signups
+  
   map.request_reset_password 'iforgot/:user_id', :controller => 'password_reset_requests', :action => 'new'
   map.resources :password_reset_requests
   
