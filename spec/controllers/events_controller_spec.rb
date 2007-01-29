@@ -162,6 +162,8 @@ context "Requesting /events/new using GET" do
 
   setup do
     @mock_event = mock('Event')
+    @mock_event.stub!(:ip_address=)
+    @mock_event.stub!(:ip_address)
     Event.stub!(:new).and_return(@mock_event)
   end
   
@@ -181,6 +183,11 @@ context "Requesting /events/new using GET" do
   
   specify "should create an new event" do
     Event.should_receive(:new).and_return(@mock_event)
+    do_get
+  end
+  
+  specify "should set the event's ip_address to the remote_ip" do
+    @mock_event.should_receive(:ip_address=).with('0.0.0.0')
     do_get
   end
   
@@ -235,6 +242,8 @@ context "Requesting /events using POST" do
     @mock_event = mock('Event')
     @mock_event.stub!(:save).and_return(true)
     @mock_event.stub!(:to_param).and_return(1)
+    @mock_event.stub!(:ip_address=)
+    @mock_event.stub!(:ip_address)
     Event.stub!(:new).and_return(@mock_event)
   end
   
@@ -243,7 +252,12 @@ context "Requesting /events using POST" do
   end
   
   specify "should create a new event" do
-    Event.should_receive(:new).with({'name' => 'Event', 'ip_address' => '0.0.0.0'}).and_return(@mock_event)
+    Event.should_receive(:new).with({'name' => 'Event'}).and_return(@mock_event)
+    do_post
+  end
+  
+  specify "should set the event's ip_address to the remote_ip" do
+    @mock_event.should_receive(:ip_address=).with('0.0.0.0')
     do_post
   end
 
