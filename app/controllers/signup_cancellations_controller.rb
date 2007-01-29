@@ -1,3 +1,3 @@
 class SignupCancellationsController < EventsController
-  rest_for :signup_cancellations
+  rest_controller_for :signup_cancellations
 end

@@ -1,3 +1,3 @@
 class ActivationsController < EventsController
-  rest_for :activations
+  rest_controller_for :activations
 end

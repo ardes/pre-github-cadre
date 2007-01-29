@@ -1,3 +1,3 @@
 class ActivationSignupsController < EventsController
-  rest_for :activation_signups
+  rest_controller_for :activation_signups
 end
