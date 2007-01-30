@@ -6,7 +6,7 @@ class PasswordReset < ActivatedUserEvent
   validates_associated :user
   
   def user_with_request(*args)
-    user_without_request(*args) or ((self.user = request.user) rescue raise ArgumentError, "assign request before accessing user")
+    user_without_request(*args) || self.user = request.user rescue nil
   end
   alias_method_chain :user, :request
 

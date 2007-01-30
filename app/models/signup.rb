@@ -9,7 +9,7 @@ class Signup < Event
   
   # build user on demand (because of delegation above)
   def user_with_build(*args)
-    user_without_build(*args) or build_user
+    user_without_build(*args) || build_user
   end
   alias_method_chain :user, :build
   

@@ -15,13 +15,10 @@ context "A PasswordReset (in general)" do
     @event = PasswordReset.new
   end
   
-  specify "should raise ArgumentError if user is accessed without request being set" do
-    lambda{ @event.user }.should_raise ArgumentError, "assign request before accessing user"
-  end
-    
-  specify "should load user from request" do
+  specify "should load :user on demand from :request" do
+    @event.user.should_be nil
     @event.request = events(:password_reset_request_fred)
-    @event.user.should == users(:fred)
+    @event.user.should_be == users(:fred)
   end
   
   specify "should delegate :password and :password_confirmation (getter and setter) to :user" do

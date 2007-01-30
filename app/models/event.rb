@@ -1,5 +1,4 @@
 require 'active_record/singleton'
-require 'active_record/record_dependency'
 require 'key_event/has'
 
 # Class heirachy:
@@ -16,7 +15,6 @@ require 'key_event/has'
 #         PasswordResetRequest
 #         PasswordReset
 class Event < ActiveRecord::Base
-  include ActiveRecord::RecordDependency
   extend KeyEvent::Has
   belongs_to :user
   

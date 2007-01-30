@@ -6,4 +6,12 @@ class ActivationSignup < Signup
     activation.signup = signup
     activation.save!
   end
+  
+  # catch any problems with the after_create of activation
+  def save(*args)
+    super(*args)
+  rescue ActiveRecord::RecordInvalid => invalid_activation
+    errors.add_to_base("Activation is not valid")
+    false
+  end
 end
