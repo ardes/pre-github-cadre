@@ -18,9 +18,11 @@ ActionController::Routing::Routes.draw do |map|
    
   map.resource :account, :controller => 'account'
   
-  map.resources :events
+  map.resources :users do |users|
+    users.resources :events, :name_prefix => 'user_', :controller => 'user_events'
+  end
 
-  map.resources :users
+  map.resources :events
 
   # Install the default route as the lowest priority.
   map.connect ':controller/:action/:id'

@@ -1,3 +1,3 @@
 class UsersController < ApplicationController
-  rest_controller_for :users
+  resources_controller_for :users
 end

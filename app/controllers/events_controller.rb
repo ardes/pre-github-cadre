@@ -1,9 +1,9 @@
 class EventsController < ApplicationController
-  rest_controller_for :events
+  resources_controller_for :events
 
 protected
-  def new_element(attrs = params[element_name])
-    returning element_class.new(attrs) do |event|
+  def new_resource
+    returning resource_service.new(params[resource_name]) do |event|
       event.ip_address ||= request.remote_ip
     end
   end
