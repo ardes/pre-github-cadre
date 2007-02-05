@@ -1,4 +1,5 @@
-require File.dirname(__FILE__) + '/tag_helper'
+require 'action_view/helpers/tag_helper'
+require 'html/document'
 
 module ActionView
   module Helpers #:nodoc:
@@ -34,7 +35,7 @@ module ActionView
       def truncate(text, length = 30, truncate_string = "...")
         if text.nil? then return end
         l = length - truncate_string.chars.length
-        text.chars.length > length ? text.chars[0...l] + truncate_string : text
+        (text.chars.length > length ? text.chars[0...l] + truncate_string : text).to_s
       end
 
       # Highlights +phrase+ everywhere it is found in +text+ by inserting it into
@@ -190,19 +191,6 @@ module ActionView
       #    => Ruby on Rails
       def strip_links(text)
         text.gsub(/<a\b.*?>(.*?)<\/a>/mi, '\1')
-      end
-
-      # Try to require the html-scanner library
-      begin
-        require 'html/tokenizer'
-        require 'html/node'
-      rescue LoadError
-        # if there isn't a copy installed, use the vendor version in
-        # ActionController
-        $:.unshift File.join(File.dirname(__FILE__), "..", "..",
-                      "action_controller", "vendor", "html-scanner")
-        require 'html/tokenizer'
-        require 'html/node'
       end
 
       VERBOTEN_TAGS = %w(form script plaintext) unless defined?(VERBOTEN_TAGS)

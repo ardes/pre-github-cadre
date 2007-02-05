@@ -25,7 +25,7 @@ class NilClass
   end
 end
 
-class Regexp
+class Regexp #:nodoc:
   def number_of_captures
     Regexp.new("|#{source}").match('').captures.length
   end
@@ -127,7 +127,8 @@ module ActionController
   # == Named routes
   #
   # Routes can be named with the syntax <tt>map.name_of_route options</tt>,
-  # allowing for easy reference within your source as +name_of_route_url+.
+  # allowing for easy reference within your source as +name_of_route_url+
+  # for the full URL and +name_of_route_path+ for the URI path.
   #
   # Example:
   #   # In routes.rb
@@ -138,29 +139,39 @@ module ActionController
   #
   # Arguments can be passed as well.
   #
-  #   redirect_to show_item_url(:id => 25)
+  #   redirect_to show_item_path(:id => 25)
   #
-  # When using +with_options+, the name goes after the item passed to the block.
+  # Use <tt>map.root</tt> as a shorthand to name a route for the root path ""
   #
-  #  ActionController::Routing::Routes.draw do |map| 
-  #    map.with_options :controller => 'blog' do |blog|
-  #      blog.show    '',            :action  => 'list'
-  #      blog.delete  'delete/:id',  :action  => 'delete',
-  #      blog.edit    'edit/:id',    :action  => 'edit'
-  #    end
-  #    map.connect ':controller/:action/:view 
-  #  end
+  #   # In routes.rb
+  #   map.root :controller => 'blogs'
   #
-  # You would then use the named routes in your views:
+  #   # would recognize http://www.example.com/ as
+  #   params = { :controller => 'blogs', :action => 'index' }
   #
-  #   link_to @article.title, show_url(:id => @article.id) 
+  #   # and provide these named routes
+  #   root_url   # => 'http://www.example.com/'
+  #   root_path  # => ''
   #
-  # == Pretty URL's
+  # Note: when using +with_options+, the route is simply named after the
+  # method you call on the block parameter rather than map.
+  #
+  #   # In routes.rb
+  #   map.with_options :controller => 'blog' do |blog|
+  #     blog.show    '',            :action  => 'list'
+  #     blog.delete  'delete/:id',  :action  => 'delete',
+  #     blog.edit    'edit/:id',    :action  => 'edit'
+  #   end
+  #
+  #   # provides named routes for show, delete, and edit
+  #   link_to @article.title, show_path(:id => @article.id) 
+  #
+  # == Pretty URLs
   #
   # Routes can generate pretty URLs. For example:
   #
   #  map.connect 'articles/:year/:month/:day',
-  #   	         :controller => 'articles', 
+  #              :controller => 'articles', 
   #              :action     => 'find_by_date',
   #              :year       => /\d{4}/,
   #              :month => /\d{1,2}/, 
@@ -306,7 +317,7 @@ module ActionController
       end     
     end
   
-    class Route
+    class Route #:nodoc:
       attr_accessor :segments, :requirements, :conditions
       
       def initialize
@@ -507,9 +518,9 @@ module ActionController
           end
         end
       end
-  
+
       def matches_controller_and_action?(controller, action)
-        unless @matching_prepared
+        unless defined? @matching_prepared
           @controller_requirement = requirement_for(:controller)
           @action_requirement = requirement_for(:action)
           @matching_prepared = true
@@ -537,7 +548,7 @@ module ActionController
   
     end
 
-    class Segment
+    class Segment #:nodoc:
       attr_accessor :is_optional
       alias_method :optional?, :is_optional
 
@@ -592,7 +603,7 @@ module ActionController
       end
     end
 
-    class StaticSegment < Segment
+    class StaticSegment < Segment #:nodoc:
       attr_accessor :value, :raw
       alias_method :raw?, :raw
   
@@ -626,7 +637,7 @@ module ActionController
       end
     end
 
-    class DividerSegment < StaticSegment
+    class DividerSegment < StaticSegment #:nodoc:
       def initialize(value = nil)
         super(value)
         self.raw = true
@@ -638,7 +649,7 @@ module ActionController
       end
     end
 
-    class DynamicSegment < Segment
+    class DynamicSegment < Segment #:nodoc:
       attr_accessor :key, :default, :regexp
   
       def initialize(key = nil, options = {})
@@ -726,7 +737,7 @@ module ActionController
   
     end
 
-    class ControllerSegment < DynamicSegment
+    class ControllerSegment < DynamicSegment #:nodoc:
       def regexp_chunk
         possible_names = Routing.possible_controllers.collect { |name| Regexp.escape name }
         "(?i-:(#{(regexp || Regexp.union(*possible_names)).source}))"
@@ -753,7 +764,7 @@ module ActionController
       end
     end
 
-    class PathSegment < DynamicSegment
+    class PathSegment < DynamicSegment #:nodoc:
       EscapedSlash = URI.escape("/")
       def interpolation_chunk
         "\#{URI.escape(#{local_name}.to_s).gsub(#{EscapedSlash.inspect}, '/')}"
@@ -783,7 +794,7 @@ module ActionController
       end     
     end
 
-    class RouteBuilder
+    class RouteBuilder #:nodoc:
       attr_accessor :separators, :optional_separators
   
       def initialize
@@ -959,13 +970,13 @@ module ActionController
       end
     end
 
-    class RouteSet
+    class RouteSet #:nodoc:
       # Mapper instances are used to build routes. The object passed to the draw
       # block in config/routes.rb is a Mapper instance.
       # 
       # Mapper instances have relatively few instance methods, in order to avoid
       # clashes with named routes.
-      class Mapper
+      class Mapper #:nodoc:
         def initialize(set)
           @set = set
         end
@@ -994,7 +1005,7 @@ module ActionController
       # A NamedRouteCollection instance is a collection of named routes, and also
       # maintains an anonymous module that can be used to install helpers for the
       # named routes.
-      class NamedRouteCollection
+      class NamedRouteCollection #:nodoc:
         include Enumerable
 
         attr_reader :routes, :helpers
@@ -1203,6 +1214,7 @@ module ActionController
 
       def generate(options, recall = {}, method=:generate)
         named_route_name = options.delete(:use_route)
+        generate_all = options.delete(:generate_all)
         if named_route_name
           named_route = named_routes[named_route_name]
           options = named_route.parameter_shell.merge(options)
@@ -1238,6 +1250,14 @@ module ActionController
           action = merged[:action]
 
           raise RoutingError, "Need controller and action!" unless controller && action
+          
+          if generate_all
+            # Used by caching to expire all paths for a resource
+            return routes.collect do |route|
+              route.send(method, options, merged, expire_on)
+            end.compact
+          end
+          
           # don't use the recalled keys when determining which routes to check
           routes = routes_by_controller[controller][action][options.keys.sort_by { |x| x.object_id }]
 

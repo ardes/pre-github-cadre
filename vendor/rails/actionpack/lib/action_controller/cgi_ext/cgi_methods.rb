@@ -12,7 +12,7 @@ class CGIMethods #:nodoc:
         next if chunk.empty?
         key, value = chunk.split('=', 2)
         next if key.empty?
-        value = (value.nil? || value.empty?) ? nil : CGI.unescape(value)
+        value = value.nil? ? nil : CGI.unescape(value)
         [ CGI.unescape(key), value ]
       end.compact
 
@@ -112,7 +112,7 @@ class CGIMethods #:nodoc:
       end
   end
 
-  class FormEncodedPairParser < StringScanner
+  class FormEncodedPairParser < StringScanner #:nodoc:
     attr_reader :top, :parent, :result
 
     def initialize(pairs = [])

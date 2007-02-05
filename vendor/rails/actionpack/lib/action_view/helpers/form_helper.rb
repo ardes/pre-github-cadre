@@ -1,6 +1,6 @@
 require 'cgi'
-require File.dirname(__FILE__) + '/date_helper'
-require File.dirname(__FILE__) + '/tag_helper'
+require 'action_view/helpers/date_helper'
+require 'action_view/helpers/tag_helper'
 
 module ActionView
   module Helpers
@@ -387,7 +387,7 @@ module ActionView
             options["name"] ||= tag_name_with_index(@auto_index)
             options["id"]   ||= tag_id_with_index(@auto_index)
           else
-            options["name"] ||= tag_name
+            options["name"] ||= tag_name + (options.has_key?('multiple') ? '[]' : '')
             options["id"]   ||= tag_id
           end
         end
@@ -452,6 +452,10 @@ module ActionView
 
       def error_messages(options = {})
         @template.error_messages_for(@object_name, options)
+      end
+      
+      def submit(value = "Save changes", options = {})
+        @template.submit_tag(value, options.reverse_merge(:id => "#{object_name}_submit"))
       end
     end
   end

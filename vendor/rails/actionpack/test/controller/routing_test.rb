@@ -1,6 +1,5 @@
-require File.dirname(__FILE__) + '/../abstract_unit'
-require 'test/unit'
-require File.dirname(__FILE__) + '/fake_controllers'
+require "#{File.dirname(__FILE__)}/../abstract_unit"
+require "#{File.dirname(__FILE__)}/fake_controllers"
 require 'action_controller/routing'
 
 RunTimeTests = ARGV.include? 'time'
@@ -789,7 +788,7 @@ class RouteTest < Test::Unit::TestCase
   end
   
   def default_route
-    unless @default_route
+    unless defined?(@default_route)
       @default_route = ROUTING::Route.new
       
       @default_route.segments << (s = ROUTING::StaticSegment.new)
@@ -1718,6 +1717,20 @@ class RouteSetTest < Test::Unit::TestCase
       {:action => 'edit', :parameter => 1},
       {:controller => 'post', :action => 'show', :parameter => 1}
     )
+  end
+  
+  def test_generate_all
+    set.draw do |map|
+      map.connect 'show_post/:id', :controller => 'post', :action => 'show'
+      map.connect ':controller/:action/:id'
+    end
+    all = set.generate(
+      {:action => 'show', :id => 10, :generate_all => true},
+      {:controller => 'post', :action => 'show'}
+    )
+    assert_equal 2, all.length
+    assert_equal '/show_post/10', all.first
+    assert_equal '/post/show/10', all.last
   end
   
 end

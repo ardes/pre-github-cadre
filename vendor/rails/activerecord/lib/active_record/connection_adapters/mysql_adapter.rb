@@ -1,7 +1,7 @@
 require 'active_record/connection_adapters/abstract_adapter'
 require 'set'
 
-module MysqlCompat
+module MysqlCompat #:nodoc:
   # add all_hashes method to standard mysql-c bindings or pure ruby version
   def self.define_all_hashes_method!
     raise 'Mysql not loaded' unless defined?(::Mysql)
@@ -85,12 +85,13 @@ module ActiveRecord
 
   module ConnectionAdapters
     class MysqlColumn < Column #:nodoc:
-      TYPES_ALLOWING_EMPTY_STRING_DEFAULT = Set.new([:binary, :string, :text])
+      TYPES_DISALLOWING_DEFAULT = Set.new([:binary, :text])
+      TYPES_ALLOWING_EMPTY_STRING_DEFAULT = Set.new([:string])
 
       def initialize(name, default, sql_type = nil, null = true)
         @original_default = default
         super
-        @default = nil if missing_default_forged_as_empty_string?
+        @default = nil if no_default_allowed? || missing_default_forged_as_empty_string?
       end
 
       private
@@ -102,13 +103,18 @@ module ActiveRecord
 
         # MySQL misreports NOT NULL column default when none is given.
         # We can't detect this for columns which may have a legitimate ''
-        # default (string, text, binary) but we can for others (integer,
-        # datetime, boolean, and the rest).
+        # default (string) but we can for others (integer, datetime, boolean,
+        # and the rest).
         #
         # Test whether the column has default '', is not null, and is not
         # a type allowing default ''.
         def missing_default_forged_as_empty_string?
           !null && @original_default == '' && !TYPES_ALLOWING_EMPTY_STRING_DEFAULT.include?(type)
+        end
+
+        # MySQL 5.0 does not allow text and binary columns to have defaults
+        def no_default_allowed?
+          TYPES_DISALLOWING_DEFAULT.include?(type)
         end
     end
 
@@ -160,7 +166,7 @@ module ActiveRecord
         true
       end
 
-      def native_database_types #:nodoc
+      def native_database_types #:nodoc:
         {
           :primary_key => "int(11) DEFAULT NULL auto_increment PRIMARY KEY",
           :string      => { :name => "varchar", :limit => 255 },
@@ -278,7 +284,7 @@ module ActiveRecord
       end
 
 
-      def add_limit_offset!(sql, options) #:nodoc
+      def add_limit_offset!(sql, options) #:nodoc:
         if limit = options[:limit]
           unless offset = options[:offset]
             sql << " LIMIT #{limit}"
@@ -388,6 +394,10 @@ module ActiveRecord
           @connection.ssl_set(@config[:sslkey], @config[:sslcert], @config[:sslca], @config[:sslcapath], @config[:sslcipher]) if @config[:sslkey]
           @connection.real_connect(*@connection_options)
           execute("SET NAMES '#{encoding}'") if encoding
+
+          # By default, MySQL 'where id is null' selects the last inserted id.
+          # Turn this off. http://dev.rubyonrails.org/ticket/6778
+          execute("SET SQL_AUTO_IS_NULL=0")
         end
 
         def select(sql, name = nil)

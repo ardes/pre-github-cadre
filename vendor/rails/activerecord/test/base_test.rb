@@ -164,8 +164,16 @@ class BasicsTest < Test::Unit::TestCase
     topic.reload
     assert_equal("null", topic.title)
     assert_equal("null", topic.author_name)
-  end  
-  
+  end
+
+  def test_save_nil_string_attributes
+    topic = Topic.find(1)
+    topic.title = nil
+    topic.save!
+    topic.reload
+    assert_nil topic.title
+  end
+
   def test_hashes_not_mangled
     new_topic = { :title => "New Topic" }
     new_topic_values = { :title => "AnotherTopic" }
@@ -534,17 +542,30 @@ class BasicsTest < Test::Unit::TestCase
     Topic.decrement_counter("replies_count", 2)
     assert_equal -2, Topic.find(2).replies_count
   end
-  
-  def test_update_all
-    # The ADO library doesn't support the number of affected rows
-    return true if current_adapter?(:SQLServerAdapter)
 
-    assert_equal 2, Topic.update_all("content = 'bulk updated!'")
-    assert_equal "bulk updated!", Topic.find(1).content
-    assert_equal "bulk updated!", Topic.find(2).content
-    assert_equal 2, Topic.update_all(['content = ?', 'bulk updated again!'])
-    assert_equal "bulk updated again!", Topic.find(1).content
-    assert_equal "bulk updated again!", Topic.find(2).content
+  # The ADO library doesn't support the number of affected rows
+  unless current_adapter?(:SQLServerAdapter)
+    def test_update_all
+      assert_equal 2, Topic.update_all("content = 'bulk updated!'")
+      assert_equal "bulk updated!", Topic.find(1).content
+      assert_equal "bulk updated!", Topic.find(2).content
+
+      assert_equal 2, Topic.update_all(['content = ?', 'bulk updated again!'])
+      assert_equal "bulk updated again!", Topic.find(1).content
+      assert_equal "bulk updated again!", Topic.find(2).content
+
+      assert_equal 2, Topic.update_all(['content = ?', nil])
+      assert_nil Topic.find(1).content
+    end
+
+    def test_update_all_with_hash
+      assert_not_nil Topic.find(1).last_read
+      assert_equal 2, Topic.update_all(:content => 'bulk updated with hash!', :last_read => nil)
+      assert_equal "bulk updated with hash!", Topic.find(1).content
+      assert_equal "bulk updated with hash!", Topic.find(2).content
+      assert_nil Topic.find(1).last_read
+      assert_nil Topic.find(2).last_read
+    end
   end
 
   def test_update_many
@@ -747,6 +768,16 @@ class BasicsTest < Test::Unit::TestCase
     firm = Firm.new
     firm.attributes = { "name" => "Next Angle", "rating" => 5 }
     assert_equal 1, firm.rating
+  end
+  
+  def test_mass_assignment_protection_against_class_attribute_writers
+    [:logger, :configurations, :primary_key_prefix_type, :table_name_prefix, :table_name_suffix, :pluralize_table_names, :colorize_logging,
+      :default_timezone, :allow_concurrency, :generate_read_methods, :schema_format, :verification_timeout, :lock_optimistically, :record_timestamps].each do |method|
+      assert  Task.respond_to?(method)
+      assert  Task.respond_to?("#{method}=")
+      assert  Task.new.respond_to?(method)
+      assert !Task.new.respond_to?("#{method}=")
+    end
   end
 
   def test_customized_primary_key_remains_protected

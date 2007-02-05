@@ -1,5 +1,37 @@
 *SVN*
 
+* Make sure that the string returned by TextHelper#truncate is actually a string, not a char proxy -- that should only be used internally while working on a multibyte-safe way of truncating [DHH]
+
+* Added FormBuilder#submit as a delegate for FormTagHelper#submit_tag [DHH]
+
+* TestSession supports indifferent access so session['foo'] == session[:foo] in your tests.  #7372 [julik, jean.helou]
+
+* Allow Routes to generate all urls for a set of options by specifying :generate_all => true. Allows caching to properly set or expire all paths for a resource. References #1739. [Nicholas Seckar]
+
+* Change the query parser to map empty GET params to "" rather than nil. Closes #5694. [Nicholas Seckar]
+
+* date_select and datetime_select take a :default option.  #7052 [nik.wakelin]
+    date_select "post", "written_on", :default => 3.days.from_now
+    date_select "credit_card", "bill_due", :default => { :day => 20 }
+
+* select :multiple => true suffixes the attribute name with [] unless already suffixed.  #6977 [nik.kakelin, ben, julik]
+
+* Improve routes documentation.  #7095 [zackchandler]
+
+* mail_to :encode => 'hex' also encodes the mailto: part of the href attribute as well as the linked email when no name is given.  #2061 [Jarkko Laine, pfc.pille@gmx.net]
+
+* Resource member routes require :id, eliminating the ambiguous overlap with collection routes.  #7229 [dkubb]
+
+* Remove deprecated assertions.  [Jeremy Kemper]
+
+* Change session restoration to allow namespaced models to be autoloaded. Closes #6348. [Nicholas Seckar]
+
+* Fix doubly appearing parameters due to string and symbol mixups. Closes #2551. [aeden]
+
+* Fix overly greedy rescues when loading helpers. Fixes #6268. [Nicholas Seckar]
+
+* Fixed NumberHelper#number_with_delimiter to use "." always for splitting the original number, not the delimiter parameter #7389 [ceefour]
+
 * Autolinking recognizes trailing and embedded . , : ;  #7354 [Jarkko Laine]
 
 * Make TextHelper::auto_link recognize URLs with colons in path correctly, fixes #7268.  [imajes]
