@@ -234,7 +234,7 @@ context "Requesting /users using POST" do
   setup do
     @mock_user = mock('User')
     @mock_user.stub!(:save).and_return(true)
-    @mock_user.stub!(:to_param).and_return(1)
+    @mock_user.stub!(:to_param).and_return("1")
     User.stub!(:new).and_return(@mock_user)
   end
   
@@ -259,7 +259,7 @@ context "Requesting /users/1 using PUT" do
 
   setup do
     @mock_user = mock('User', :null_object => true)
-    @mock_user.stub!(:to_param).and_return(1)
+    @mock_user.stub!(:to_param).and_return("1")
     User.stub!(:find).and_return(@mock_user)
   end
   

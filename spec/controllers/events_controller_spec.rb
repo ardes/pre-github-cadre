@@ -241,7 +241,7 @@ context "Requesting /events using POST" do
   setup do
     @mock_event = mock('Event')
     @mock_event.stub!(:save).and_return(true)
-    @mock_event.stub!(:to_param).and_return(1)
+    @mock_event.stub!(:to_param).and_return("1")
     @mock_event.stub!(:ip_address=)
     @mock_event.stub!(:ip_address)
     Event.stub!(:new).and_return(@mock_event)
@@ -273,7 +273,7 @@ context "Requesting /events/1 using PUT" do
 
   setup do
     @mock_event = mock('Event', :null_object => true)
-    @mock_event.stub!(:to_param).and_return(1)
+    @mock_event.stub!(:to_param).and_return("1")
     Event.stub!(:find).and_return(@mock_event)
   end
   
