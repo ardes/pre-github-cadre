@@ -3,17 +3,18 @@ require 'key_event/has'
 
 # Class heirachy:
 #   Event
-#     Signup
-#       ActivationSignup
-#     UserEvent
-#       NonActivatedUserEvent
-#         SignupCancellation
-#         Activation
-#       ActivatedUserEvent
-#         Recognition
-#         Login
-#         PasswordResetRequest
-#         PasswordReset
+#       Signup
+#           ActivationSignup
+#       UserEvent
+#           NonActivatedUserEvent
+#               SignupCancellation
+#               Activation
+#           ActivatedUserEvent
+#               Recognition
+#               Login
+#               PasswordResetRequest
+#               PasswordReset
+#
 class Event < ActiveRecord::Base
   extend KeyEvent::Has
   belongs_to :user
@@ -29,13 +30,13 @@ class Event < ActiveRecord::Base
     readonly! if result
   end
   
-  def after_find;
-    readonly!;
+  def after_find
+    readonly!
   end
   
   # return true if this is a saved record of the specifed class (default Event)
   def saved?(klass = Event)
-    is_a?(klass) && !new_record?
+    !new_record? && is_a?(klass)
   end
   
   # singleton container for class-wide properties

@@ -11,8 +11,8 @@ class PasswordReset < ActivatedUserEvent
   alias_method_chain :user, :request
 
   # merge user errors
-  after_validation do |signup|
-    signup.user.errors.each {|attr, msg| signup.errors.add(attr, msg)} 
+  after_validation do |reset|
+    reset.user.errors.each {|attr, msg| reset.errors.add(attr, msg)} 
   end
   
   after_create do |reset|

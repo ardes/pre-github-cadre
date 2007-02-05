@@ -48,12 +48,12 @@ class User < ActiveRecord::Base
   
   # use the current email as confirmation if the confirmation is nil or false (note: a blank confirmation will be used)
   def email_confirmation
-    @email_confirmation or email
+    @email_confirmation || email
   end
   
   # computes name from display_name, then email
   def name
-    display_name or (email and email.sub('.',' ').sub(/@.*$/,'').titleize)
+    display_name || (email && email.sub('.',' ').sub(/@.*$/,'').titleize)
   end
   
   # computes email_address from name and email
