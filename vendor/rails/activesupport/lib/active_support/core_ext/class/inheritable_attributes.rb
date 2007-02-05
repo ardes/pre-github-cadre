@@ -89,10 +89,13 @@ class Class # :nodoc:
   end
 
   def inheritable_attributes
-    @inheritable_attributes ||= {}
+    @inheritable_attributes ||= EMPTY_INHERITABLE_ATTRIBUTES
   end
   
   def write_inheritable_attribute(key, value)
+    if inheritable_attributes.equal?(EMPTY_INHERITABLE_ATTRIBUTES)
+      @inheritable_attributes = {}
+    end
     inheritable_attributes[key] = value
   end
   
@@ -111,15 +114,22 @@ class Class # :nodoc:
   end
   
   def reset_inheritable_attributes
-    inheritable_attributes.clear
+    @inheritable_attributes = EMPTY_INHERITABLE_ATTRIBUTES
   end
 
-  private 
+  private
+    # Prevent this constant from being created multiple times
+    EMPTY_INHERITABLE_ATTRIBUTES = {}.freeze unless const_defined?(:EMPTY_INHERITABLE_ATTRIBUTES)
+
     def inherited_with_inheritable_attributes(child)
       inherited_without_inheritable_attributes(child) if respond_to?(:inherited_without_inheritable_attributes)
       
-      new_inheritable_attributes = inheritable_attributes.inject({}) do |memo, (key, value)|
-        memo.update(key => (value.dup rescue value))
+      if inheritable_attributes.equal?(EMPTY_INHERITABLE_ATTRIBUTES)
+        new_inheritable_attributes = EMPTY_INHERITABLE_ATTRIBUTES
+      else
+        new_inheritable_attributes = inheritable_attributes.inject({}) do |memo, (key, value)|
+          memo.update(key => (value.dup rescue value))
+        end
       end
       
       child.instance_variable_set('@inheritable_attributes', new_inheritable_attributes)
