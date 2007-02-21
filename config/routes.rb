@@ -1,11 +1,11 @@
 ActionController::Routing::Routes.draw do |map|
   map.sign_up 'sign_up', :controller => 'signups', :action => 'new'
   
-  map.activate 'activate/:signup_id/:signup_key', :controller => 'activations', :action => 'new'
+  map.activate 'activate/:signup_id/:signup_key', :controller => 'activations', :action => 'create'
   
-  map.cancel_signup 'cancel/:signup_id/:signup_key', :controller => 'signup_cancellations', :action => 'new'
+  map.cancel_signup 'cancel/:signup_id/:signup_key', :controller => 'signup_cancellations', :action => 'create'
   
-  map.request_reset_password 'iforgot/:user_id', :controller => 'password_reset_requests', :action => 'new'
+  map.request_reset_password 'iforgot/:user_id', :controller => 'password_reset_requests', :action => 'create'
   
   map.reset_password 'reset/:request_id/:request_key', :controller => 'password_resets', :action => 'new'
    
