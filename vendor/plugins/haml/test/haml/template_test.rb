@@ -45,7 +45,7 @@ class TemplateTest < Test::Unit::TestCase
     test = Proc.new do |rendered|
       load_result(name).split("\n").zip(rendered.split("\n")).each_with_index do |pair, line|
         message = "template: #{name}\nline:     #{line}"
-        assert_equal(pair.first, pair.last, message)
+        assert_equal(pair.last, pair.first, message)
       end
     end
     test.call(@base.render(name))
@@ -91,6 +91,14 @@ class TemplateTest < Test::Unit::TestCase
   end
 
   def test_rhtml_still_renders
+    # Make sure it renders normally
+    res = @base.render("../rhtml/standard")
+    assert !(res.nil? || res.empty?)
+
+    # Register Haml stuff in @base...
+    @base.render("standard") 
+
+    # Does it still render?
     res = @base.render("../rhtml/standard")
     assert !(res.nil? || res.empty?)
   end
@@ -103,28 +111,20 @@ class TemplateTest < Test::Unit::TestCase
   end
 
   def test_exceptions_should_work_correctly
-    template = <<END
-%p
-  %h1 Hello!
-  = "lots of lines"
-  - raise "Oh no!"
-  %p
-    this is after the exception
-    %strong yes it is!
-ho ho ho.
-END
-    @base.haml_filename = "(test)"
     begin
-      render(template.chomp)
+      Haml::Template.new(@base).render(File.dirname(__FILE__) + '/templates/breakage.haml')
     rescue Exception => e
-      assert_equal("(test).haml:4", e.backtrace[0])
+      assert_equal("./test/haml/templates/breakage.haml:4", e.backtrace[0])
+    else
+      assert false
     end
 
-    @base.haml_filename = nil
     begin
-      render(template.chomp)
+      render("- raise 'oops!'")
     rescue Exception => e
-      assert_equal("(haml):4", e.backtrace[0])
+      assert_equal("(haml):1", e.backtrace[0])
+    else
+      assert false
     end
 
     template = <<END
@@ -132,7 +132,7 @@ END
   %h1 Hello!
   = "lots of lines"
   = "even more!"
-  - compile_error(
+  - raise 'oh no!'
   %p
     this is after the exception
     %strong yes it is!
@@ -143,6 +143,8 @@ END
       render(template.chomp)
     rescue Exception => e
       assert_equal("(haml):5", e.backtrace[0])
+    else
+      assert false
     end
   end
 end

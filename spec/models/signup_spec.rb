@@ -16,7 +16,7 @@ context "A new Signup" do
   fixtures :users, :events, :event_properties
 
   setup do
-    @signup = Signup.new 'email' => 'satan@hell.com', :password => 'kittens' # begin with a valild signup
+    @signup = Signup.new :email => 'satan@hell.com', :password => 'kittens' # begin with a valild signup
   end
   
   specify "should build :user on demand" do

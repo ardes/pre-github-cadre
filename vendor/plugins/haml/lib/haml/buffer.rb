@@ -52,7 +52,7 @@ module Haml
     # instance_eval.
     def push_script(result, tabulation, flattened)
       if flattened
-        result = find_and_flatten(result)
+        result = Haml::Helpers.find_and_preserve(result)
       end
       unless result.nil?
         result = result.to_s
@@ -71,8 +71,8 @@ module Haml
     # element, formats it, and adds it to the buffer.
     def open_tag(name, tabulation, atomic, try_one_line, class_id, attributes_hash, obj_ref, flattened)
       attributes = {}
-      attributes.merge!(parse_object_ref(obj_ref)) if obj_ref
       attributes.merge!(parse_class_and_id(class_id)) unless class_id.nil? || class_id.empty?
+      attributes.merge!(parse_object_ref(obj_ref, attributes[:id], attributes[:class])) if obj_ref
       attributes.merge!(attributes_hash) if attributes_hash
 
       @one_liner_pending = false
@@ -157,20 +157,30 @@ module Haml
 
     # Takes an array of objects and uses the class and id of the first
     # one to create an attributes hash.
-    def parse_object_ref(ref)
+    def parse_object_ref(ref, old_id, old_class)
       ref = ref[0]
       # Let's make sure the value isn't nil. If it is, return the default Hash.
       return {} if ref.nil?
       class_name = ref.class.to_s.underscore
-      {:id => "#{class_name}_#{ref.id}", :class => class_name}
+      id = "#{class_name}_#{ref.id}"
+
+      if old_class
+        class_name += " #{old_class}"
+      end
+
+      if old_id
+        id = "#{old_id}_#{id}"
+      end
+
+      {:id => id, :class => class_name}
     end
 
     # Takes a hash and builds a list of XHTML attributes from it, returning
     # the result.
     def build_attributes(attributes = {})
       result = attributes.collect do |a,v|
-        unless v.nil?
-          v = v.to_s
+        v = v.to_s
+        unless v.nil? || v.empty?
           attr_wrapper = @options[:attr_wrapper]
           if v.include? attr_wrapper
             if v.include? @other_quote_char
@@ -189,16 +199,6 @@ module Haml
     # on one line.
     def one_liner?(value)
       value.length <= ONE_LINER_LENGTH && value.scan(/\n/).empty?
-    end
-
-    # Isolates the whitespace-sensitive tags in the string and uses Haml::Helpers#flatten
-    # to convert any endlines inside them into html entities.
-    def find_and_flatten(input)
-      input = input.to_s
-      input.scan(/<(textarea|code|pre)[^>]*>(.*?)<\/\1>/im) do |tag, contents|
-        input = input.gsub(contents, Haml::Helpers.flatten(contents))
-      end
-      input
     end
   end
 end

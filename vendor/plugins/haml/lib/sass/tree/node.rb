@@ -1,10 +1,11 @@
 module Sass
   module Tree
     class Node
-      attr_reader :children
-      attr_writer :children
+      attr_accessor :children
+      attr_accessor :line
 
-      def initialize
+      def initialize(style)
+        @style = style
         @children = []
       end
 
@@ -15,7 +16,11 @@ module Sass
       def to_s
         result = String.new
         children.each do |child|
-          result += "#{child.to_s}\n"
+          if child.is_a? AttrNode
+            raise SyntaxError.new('Attributes aren\'t allowed at the root of a document.', child.line)
+          end
+
+          result += "#{child.to_s(1)}\n"
         end
         result[0...-1]
       end

@@ -1,4 +1,7 @@
 class Recognition < ActivatedUserEvent
-  # a recognition can be issued with just a user_id
-  attr_protected.delete :user_id
+  has_key_event :login
+  
+  before_validation do |recognition|
+    recognition.user = recognition.login.user rescue nil
+  end
 end

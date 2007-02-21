@@ -6,10 +6,10 @@ require 'sass/constant/color'
 
 class Sass::Constant::Literal
   # The regular expression matching numbers.
-  NUMBER  = /^\-?[0-9]*\.?[0-9]+$/
+  NUMBER  = /^(-?[0-9]*?\.?)([0-9]+)([^0-9\s]*)$/
 
   # The regular expression matching colors.
-  COLOR = /^\#(#{"[0-9a-f]" * 3}|#{"[0-9a-f]" * 6})/
+  COLOR = /^\#(#{"[0-9a-fA-F]" * 3}|#{"[0-9a-fA-F]" * 6})/
   
   def self.parse(value)
     case value
@@ -28,6 +28,10 @@ class Sass::Constant::Literal
   
   def perform
     self
+  end
+
+  def concat(other)
+    Sass::Constant::String.from_value("#{self.to_s} #{other.to_s}")
   end
   
   attr_reader :value

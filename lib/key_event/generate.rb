@@ -7,6 +7,9 @@ module KeyEvent
   # You can then find the event with either
   #  * find_by_id_and_key - which computes the hash from the given key and matches that, or
   #  * find_by_id_and_key_hash - which simply selects on id and key_hash
+  #
+  # The reason we use an id and a key to find the record is that the key hash model is upgradeable, and has the key_algorithm
+  # stored in the model.  This means that we must first find the target record, and then match the hash.
   module Generate
     def self.included(base)
       require 'salted_hash'

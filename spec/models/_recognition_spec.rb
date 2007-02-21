@@ -4,20 +4,16 @@ context "A new Recognition" do
   fixtures :events, :users
   
   setup do
-    @recognition = Recognition.new :user_id => 1 # start with a valid Recognition (user:1 is activated)
-  end
-
-  specify "should unprotect :user_id (and allow setting user_id via attributes)" do
-    @recognition.user_id.should == 1
+    @login = Login.create :email => 'fred@gmail.com', :password => 'wilma'
+    @recognition = Recognition.new :login_id => @login.id, :login_key => @login.key # start with a valid Recognition
   end
   
-  specify "should be invalid with a non activated user" do
-    @recognition = Recognition.new :user_id => 2 # user:2 is not activated
-    @recognition.should_not_be_valid
-    @recognition.errors.full_messages.should_include "User should be activated"
-  end
-  
-  specify "should be valid with an activated user" do
+  specify "should be valid with a valid login" do
     @recognition.should_be_valid
+  end
+  
+  specify "should have user == to login's user on create" do
+    @recognition.save.should_be true
+    @recognition.user.should_be == @login.user
   end
 end

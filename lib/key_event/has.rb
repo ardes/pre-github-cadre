@@ -1,5 +1,8 @@
 module KeyEvent
   # extend Event with this module to provide ability for an Event to be dependent on a key event
+  #
+  # The reason we use an id and a key to find the record is that the key hash model is upgradeable, and has the key_algorithm
+  # stored in the model.  This means that we must first find the target record, and then match the hash.
   module Has
     # Usage
     #  has_key_event :event [, :class => EventClass]

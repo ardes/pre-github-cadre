@@ -11,9 +11,12 @@ class SassPluginTest < Test::Unit::TestCase
   @@templates = %w{ complex constants }
 
   def setup
-    Sass::Plugin.options[:template_location]  = File.dirname(__FILE__) + '/templates'
-    Sass::Plugin.options[:css_location]       = File.dirname(__FILE__) + '/tmp'
-    Sass::Plugin.options[:always_update]      = true
+    Sass::Plugin.options = {
+      :template_location => File.dirname(__FILE__) + '/templates',
+      :css_location => File.dirname(__FILE__) + '/tmp',
+      :style => :compact
+    }
+    Sass::Plugin.options[:always_update] = true
     
     Sass::Plugin.update_stylesheets
   end
@@ -34,19 +37,22 @@ class SassPluginTest < Test::Unit::TestCase
   end
   
   def test_exception_handling
+    File.delete(tempfile_loc('bork'))
+    Sass::Plugin.update_stylesheets
     File.open(tempfile_loc('bork')) do |file|
-      assert file.gets + file.gets == "Undefined constant:\n!bork\n"
+      assert_equal("/*\nSass::SyntaxError: Undefined constant: \"!bork\"\non line 2 of #{File.dirname(__FILE__) + '/templates/bork.sass'}\n\n1: bork\n2:   :bork= !bork", file.read.split("\n")[0...6].join("\n"))
     end
     File.delete(tempfile_loc('bork'))
+  end
+
+  def test_production_exception_handling
     Sass.const_set('RAILS_ENV', 'production')
-    raised = false
-    begin
-      Sass::Plugin.update_stylesheets
-    rescue
-      raised = true
-    end
-    assert raised
-    assert !File.exists?(tempfile_loc('bork'))
+
+    File.delete(tempfile_loc('bork'))
+    Sass::Plugin.update_stylesheets
+    assert_equal("/* Internal stylesheet error */", File.read(tempfile_loc('bork')))
+    File.delete(tempfile_loc('bork'))
+
     Sass::Plugin.const_set('RAILS_ENV', 'testing')
   end
   

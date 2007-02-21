@@ -32,12 +32,12 @@ context "CadreNotifier" do
   
   specify "should deliver requested_reset_password(request) on create PasswordResetRequest" do
     CadreNotifier.should_receive(:deliver_requested_reset_password) {|request| request.user.should_be == users(:fred)}
-    PasswordResetRequest.create :user_id => users(:fred).id
+    PasswordResetRequest.create :email => users(:fred).email
   end
   
   specify "should deliver reset_password(reset) on create PasswordReset" do
     CadreNotifier.should_receive(:deliver_reset_password) {|reset| reset.user.should_be == users(:fred)}
-    request = PasswordResetRequest.create :user_id => users(:fred).id
+    request = PasswordResetRequest.create :email => users(:fred).email
     PasswordReset.create :request_id => request.id, :request_key => request.key, :password => 'foobar'
   end
 end

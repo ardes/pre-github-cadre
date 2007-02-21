@@ -90,17 +90,17 @@ class HelperTest < Test::Unit::TestCase
   end
   
   def test_form_tag
-    # Until the next Rails is released, form_tag with a block can have one of
-    # two behaviors.
-    
     result = render("- form_tag 'foo' do\n  %p bar\n  %strong baz", :action_view)
-    new_rails = "<form action=\"foo\" method=\"post\">\n  <p>bar</p>\n  <strong>baz</strong>\n</form>"
-    old_rails = "" 
-    assert(result == new_rails || result == old_rails)
+    should_be = "<form action=\"foo\" method=\"post\">\n  <p>bar</p>\n  <strong>baz</strong>\n</form>\n"
+    assert_equal(should_be, result)
   end
   
   def test_capture_haml
     assert_equal("\"<p>13</p>\\n\"\n", render("- foo = capture_haml(13) do |a|\n  %p= a\n= foo.dump"))
+  end
+
+  def test_is_haml
+    assert(!ActionView::Base.new.is_haml?)
   end
 end
 

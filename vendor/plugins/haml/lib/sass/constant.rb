@@ -3,23 +3,34 @@ require 'sass/constant/literal'
 
 module Sass
   module Constant
+    # The character that begins a constant.
+    CONSTANT_CHAR   = ?!
+
     # Whitespace characters
-    WHITESPACE = [' '[0], "\t"[0], "\n"[0], "\r"[0]]
+    WHITESPACE = [?\ , ?\t, ?\n, ?\r]
   
     # The character used to escape values
-    ESCAPE_CHAR = '\\'[0]
+    ESCAPE_CHAR = ?\\
+
+    # The character used to open and close strings
+    STRING_CHAR = ?"
     
     # A mapping of syntactically-significant characters
     # to parsed symbols
     SYMBOLS = {
-      '('[0] => :open,
-      ')'[0] => :close,
-      '+'[0] => :plus,
-      '-'[0] => :minus,
-      '*'[0] => :times,
-      '/'[0] => :div,
-      '%'[0] => :mod
+      ?( => :open,
+      ?) => :close,
+      ?+ => :plus,
+      ?- => :minus,
+      ?* => :times,
+      ?/ => :div,
+      ?% => :mod,
+      STRING_CHAR => :str,
+      ESCAPE_CHAR => :esc
     }
+
+    # The regular expression used to parse constants
+    MATCH = /^#{Regexp.escape(CONSTANT_CHAR.chr)}([^\s#{(SYMBOLS.keys + [ ?= ]).map {|c| Regexp.escape("#{c.chr}") }}]+)\s*=\s*(.+)/
     
     # First-order operations
     FIRST_ORDER = [:times, :div, :mod]
@@ -28,14 +39,25 @@ module Sass
     SECOND_ORDER = [:plus, :minus]
   
     class << self    
-      def parse(value, constants)
-        operationalize(parenthesize(tokenize(value)), value, constants).to_s
+      def parse(value, constants, line)
+        begin
+          operationalize(parenthesize(tokenize(value)), constants).to_s
+        rescue Sass::SyntaxError => e
+          if e.message == "Constant arithmetic error"
+            e.instance_eval do
+              @message += ": #{value.dump}"
+            end
+          end
+          e.sass_line = line
+          raise e
+        end
       end
       
       private
       
       def tokenize(value)
         escaped = false
+        is_string = false
         negative_okay = true
         str = ''
         to_return = []
@@ -47,22 +69,39 @@ module Sass
         
         value.each_byte do |byte|
           unless escaped
-            if WHITESPACE.include?(byte)
-              str = reset_str.call
-              next
-            end
-            
             if byte == ESCAPE_CHAR
               escaped = true
               next
             end
-            
-            symbol = SYMBOLS[byte]
-            if symbol && !(negative_okay && symbol == :minus)
+
+            if byte == STRING_CHAR
               str = reset_str.call
-              negative_okay = true
-              to_return << symbol
+              is_string = !is_string
               next
+            end
+
+            unless is_string
+
+              if WHITESPACE.include?(byte)
+                str = reset_str.call
+                next
+              end
+            
+              last = to_return[-1]
+              symbol = SYMBOLS[byte]
+
+              if (symbol.nil? || symbol == :open) &&
+                  last && (!last.is_a?(Symbol) || last == :close)
+                # Two values connected without an operator
+                to_return << :concat
+              end
+
+              if symbol && !(negative_okay && symbol == :minus)
+                str = reset_str.call
+                negative_okay = true
+                to_return << symbol
+                next
+              end
             end
           end
           
@@ -71,6 +110,9 @@ module Sass
           str << byte.chr
         end
         
+        if is_string
+          raise Sass::SyntaxError.new("Unterminated string: #{value.dump}")
+        end
         str = reset_str.call
         to_return
       end
@@ -104,7 +146,7 @@ module Sass
       # TODO: Don't pass around original value;
       #       have Constant.parse automatically add it to exception.
       #++
-      def operationalize(value, original, constants)
+      def operationalize(value, constants)
         value = [value] unless value.is_a?(Array)
         length = value.length
         if length == 1
@@ -115,24 +157,25 @@ module Sass
             Literal.parse(insert_constant(value, constants))
           end
         elsif length == 2
-          raise "Syntax error:\n#{original}"
+          raise SyntaxError.new("Constant arithmetic error")
         elsif length == 3
-          Operation.new(operationalize(value[0], original, constants), operationalize(value[2], original, constants), value[1])
+          Operation.new(operationalize(value[0], constants), operationalize(value[2], constants), value[1])
         else
-          raise "Syntax error:\n#{original}" unless length >= 5 && length % 2 == 1
           if SECOND_ORDER.include?(value[1]) && FIRST_ORDER.include?(value[3])
-            operationalize([value[0], value[1], operationalize(value[2..4], original, constants), *value[5..-1]], original, constants)
+            operationalize([value[0], value[1], operationalize(value[2..4], constants), *value[5..-1]], constants)
           else
-            operationalize([operationalize(value[0..2], original, constants), *value[3..-1]], original, constants)
+            operationalize([operationalize(value[0..2], constants), *value[3..-1]], constants)
           end
         end
       end
       
       def insert_constant(value, constants)
         to_return = value
-        if value[0] == Sass::Engine::CONSTANT_CHAR
+        if value[0] == CONSTANT_CHAR
           to_return = constants[value[1..-1]]
-          raise "Undefined constant:\n#{value}" unless to_return
+          unless to_return
+            raise SyntaxError.new("Undefined constant: \"#{value}\"")
+          end
         end
         to_return
       end
