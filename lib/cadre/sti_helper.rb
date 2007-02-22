@@ -13,11 +13,11 @@ module Cadre
       end
     end
   
-    def render_sti_collection(partial, collection)
+    def render_sti_collection(partial, collection, model_controller_mapping = {})
       collection.inject('') do |out, item|
-        path = inherited_template_path("#{item.class.name.tableize}/_#{partial}", "#{item.class.name.pluralize}Controller".constantize)
+        path = inherited_template_path("#{item.class.name.tableize}/_#{partial}", model_controller_mapping[item.class] || "#{item.class.name.pluralize}Controller".constantize)
         out << render(:file => path, :locals => {partial => item})
-      end  
+      end
     end
   end
 end
