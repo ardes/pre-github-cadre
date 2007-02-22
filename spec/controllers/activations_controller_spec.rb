@@ -4,8 +4,8 @@ context "Routes for the ActivationsController should map" do
   controller_name :activations
   include ActionController::UrlWriter
   
-  specify "/activate/id/key and {:controller => 'activations', :action => 'new', :signup_id => '1', :signup_key => 'key'}" do
-    '/activate/1/key'.should_map_route_with :controller => 'activations', :action => 'new', :signup_id => '1', :signup_key => 'key'
+  specify "/activate/id/key and {:controller => 'activations', :action => 'create', :signup_id => '1', :signup_key => 'key'}" do
+    '/activate/1/key'.should_map_route_with :controller => 'activations', :action => 'create', :signup_id => '1', :signup_key => 'key'
   end
 
   specify "named route: activate {:signup_id => 1, :signup_key => 'key'} to /activate/1/key" do

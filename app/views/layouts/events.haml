@@ -1,0 +1,8 @@
+!!!
+%html
+  %head
+    %title= "#{resources_name.titleize}: #{controller.action_name}"
+    = stylesheet_link_tag 'scaffold'
+  %body
+    %p#flash= flash[:notice]
+    = yield

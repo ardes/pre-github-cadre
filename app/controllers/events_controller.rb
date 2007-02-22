@@ -1,5 +1,6 @@
 class EventsController < ApplicationController
   resources_controller_for :events
+  include Cadre::Feeder
   inherit_views
 
   # For events that generate a key, we return that in the header.  The cadre client
@@ -21,16 +22,20 @@ class EventsController < ApplicationController
         end
       else
         format.html { render :action => "new" }
-        format.xml  { render :xml => resource.errors.to_xml, :status => 422 }
+        format.xml  { render :xml => resource.errors.to_xml, :status => :unprocessable_entity }
       end
     end
   end
-
+  
 protected
   def new_resource
     returning resource_service.new(params[resource_name]) do |event|
       event.ip_address ||= request.remote_ip
     end
+  end
+  
+  def find_resources
+    resource_service.find :all, :include => :user, :order => 'events.id DESC'
   end
 end
 

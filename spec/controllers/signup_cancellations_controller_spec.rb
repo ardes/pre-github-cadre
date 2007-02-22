@@ -4,8 +4,8 @@ context "Routes for the SignupCancellationsController" do
   controller_name :signup_cancellations
   include ActionController::UrlWriter
   
-  specify "should map '/cancel/id/key' with {:controller => 'signup_cancellations', :action => 'new', :signup_id => '1', :signup_key => 'key'}" do
-    '/cancel/1/key'.should_map_route_with :controller => 'signup_cancellations', :action => 'new', :signup_id => '1', :signup_key => 'key'
+  specify "should map '/cancel/id/key' with {:controller => 'signup_cancellations', :action => 'create', :signup_id => '1', :signup_key => 'key'}" do
+    '/cancel/1/key'.should_map_route_with :controller => 'signup_cancellations', :action => 'create', :signup_id => '1', :signup_key => 'key'
   end
 
   specify "has named route cancel_signup(1, 'key') generating /cancel/1/key" do
