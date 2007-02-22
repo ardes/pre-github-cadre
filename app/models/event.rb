@@ -39,6 +39,16 @@ class Event < ActiveRecord::Base
     !new_record? && is_a?(klass)
   end
   
+  # return a name of this event
+  def name
+    "#{self.class.name.titleize}: #{user.email rescue 'guest'}"
+  end
+  
+  # return a description of this event
+  def description
+    "#{self.class.name.titleize} by #{"#{user.name} (#{user.email})" rescue 'guest'} from #{ip_address || 'unknown ip address'} at #{created_at}"
+  end
+  
   # singleton container for class-wide properties
   class Properties < ActiveRecord::Base
     include ActiveRecord::Singleton

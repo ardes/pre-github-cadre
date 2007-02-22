@@ -61,6 +61,14 @@ class User < ActiveRecord::Base
     "#{name} <#{email}>" if email
   end
   
+  def description
+    "#{name}, #{email}, #{activated? ? 'activated' : 'not activated'}"
+  end
+  
+  def created_at
+    signup && signup.created_at
+  end
+    
   def activated?
     !activation_id.nil?
   end
