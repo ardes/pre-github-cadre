@@ -42,7 +42,7 @@ context "A User (in general)" do
     @user.name.should == 'Frank Drebbin'
   end
   
-  specify "should derive :email_address in format: ':name <:email>'" do
+  specify "should derive :email_address in format: ':name <:email>', if email present" do
     @user.email_address.should_be_nil
     @user.email = 'frank_d_drebbin@airplane.com'
     @user.email_address.should == 'Frank D Drebbin <frank_d_drebbin@airplane.com>'
@@ -54,6 +54,21 @@ context "A User (in general)" do
     @user.should_not_be_activated
     @user.activation_id = 1
     @user.should_be_activated
+  end
+  
+  specify "should delegate created_at to signup if it exists" do
+    @user.created_at.should == nil
+    @user.signup = Signup.new
+    @user.signup.created_at = time = Time.now
+    @user.created_at.should == time
+  end
+  
+  specify "should have a description containing name, email and activation status, if email present" do
+    @user.description.should == nil
+    @user.email = 'foo@bar.com'
+    @user.description.should == 'Foo, foo@bar.com, not activated'
+    @user.activation_id = 1
+    @user.description.should == 'Foo, foo@bar.com, activated'
   end
 end
 

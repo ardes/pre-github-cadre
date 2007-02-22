@@ -41,12 +41,12 @@ class Event < ActiveRecord::Base
   
   # return a name of this event
   def name
-    "#{self.class.name.titleize}: #{user.email rescue 'guest'}"
+    "#{self.class.name.titleize}: #{user.email rescue 'unknown user'}"
   end
   
   # return a description of this event
   def description
-    "#{self.class.name.titleize} by #{"#{user.name} (#{user.email})" rescue 'guest'} from #{ip_address || 'unknown ip address'} at #{created_at}"
+    "#{self.class.name.titleize} by #{"#{user.name} (#{user.email})" rescue 'guest'} from #{ip_address || 'unknown ip address'} at #{created_at}" unless new_record?
   end
   
   # singleton container for class-wide properties

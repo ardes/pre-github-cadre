@@ -47,10 +47,14 @@ context "A new Event (and subclasses)" do
     @event.should_not_be_saved Event
     @event.should_not_be_saved Signup
   end
+
+  specify "should have a name like 'EventType: unknown user' if user not present" do
+    @event.name.should == 'Event: unknown user'
+  end
 end
 
 context "An existing Event (and subclasses)" do
-  fixtures :events
+  fixtures :events, :users
   
   setup do
     @event = events(:signup_fred)
@@ -69,5 +73,18 @@ context "An existing Event (and subclasses)" do
     @event.should_be_saved Event
     @event.should_be_saved Signup
     @event.should_not_be_saved Activation
+  end
+  
+  specify "should have a name like EventType: email@of.user if user present" do
+    @event.user = users(:fred)
+    @event.name.should == 'Signup: fred@gmail.com'
+  end
+  
+  specify "should have a description containing type, user name, user email, ip address and created at" do
+    @event.description.should_include 'Signup'
+    @event.description.should_include events(:signup_fred).ip_address
+    @event.description.should_include events(:signup_fred).created_at.to_s
+    @event.description.should_include users(:fred).name
+    @event.description.should_include users(:fred).email
   end
 end
