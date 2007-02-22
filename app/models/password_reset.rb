@@ -5,11 +5,11 @@ class PasswordReset < ActivatedUserEvent
   
   validates_associated :user
   
-  def user_with_request(*args)
-    user_without_request(*args) || self.user = request.user rescue nil
+  # load user from password reset request
+  def user(*args)
+    super(*args) || self.user = request.user rescue nil
   end
-  alias_method_chain :user, :request
-
+  
   # merge user errors
   after_validation do |reset|
     reset.user.errors.each {|attr, msg| reset.errors.add(attr, msg)} 

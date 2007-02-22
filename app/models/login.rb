@@ -1,7 +1,7 @@
-require 'key_event/generate'
+require 'cadre/key_event/generate'
 
 class Login < ActivatedUserEvent
-  include KeyEvent::Generate
+  include Cadre::KeyEvent::Generate
 
   attr_accessor :email, :password
   

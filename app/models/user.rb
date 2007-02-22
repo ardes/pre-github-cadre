@@ -53,7 +53,7 @@ class User < ActiveRecord::Base
   
   # computes name from display_name, then email
   def name
-    display_name || (email && email.sub('.',' ').sub(/@.*$/,'').titleize)
+    display_name || (email && email.gsub('.',' ').sub(/@.*$/,'').titleize)
   end
   
   # computes email_address from name and email
@@ -103,12 +103,6 @@ class User < ActiveRecord::Base
     self.password_algorithm = self.class.password_algorithm
     self.password_salt = SaltedHash::salt
     self.password_hash = SaltedHash::compute(password_algorithm, password, password_salt)
-  end
-  
-  # return a random password
-  def self.random_password
-    chars = ('a'..'z').to_a + ('A'..'Z').to_a + ('0'..'9').to_a
-    (1..16).inject('') {|p, _| p << chars[rand(chars.length)]}
   end
   
   def self.find_activated(*args)

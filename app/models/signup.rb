@@ -1,17 +1,16 @@
-require 'key_event/generate'
+require 'cadre/key_event/generate'
 
 class Signup < Event
-  include KeyEvent::Generate
+  include Cadre::KeyEvent::Generate
   
   delegate  :display_name, :display_name=, :email, :email=, :email_confirmation, :email_confirmation=,
             :password, :password=, :password_confirmation, :password_confirmation=,
             :to => :user
   
   # build user on demand (because of delegation above)
-  def user_with_build(*args)
-    user_without_build(*args) || build_user
+  def user(*args)
+    super(*args) || build_user
   end
-  alias_method_chain :user, :build
   
   validates_associated :user
   

@@ -1,5 +1,5 @@
-require 'key_event/generate'
+require 'cadre/key_event/generate'
 
 class MyKeyEvent < Event
-  include KeyEvent::Generate
+  include Cadre::KeyEvent::Generate
 end

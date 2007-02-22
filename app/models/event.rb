@@ -1,5 +1,5 @@
 require 'active_record/singleton'
-require 'key_event/has'
+require 'cadre/key_event/has'
 
 # Class heirachy:
 #   Event
@@ -16,7 +16,7 @@ require 'key_event/has'
 #               PasswordReset
 #
 class Event < ActiveRecord::Base
-  extend KeyEvent::Has
+  extend Cadre::KeyEvent::Has
   belongs_to :user
   
   attr_protected :user_id, :created_at
