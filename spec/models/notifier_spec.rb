@@ -1,6 +1,6 @@
 require File.dirname(__FILE__) + '/../spec_helper'
 
-module CadreNotifierSpecHelper
+module NotifierSpecHelper
   def self.included(base)
     base.class_eval do
       fixtures :events, :users, :user_properties, :event_properties
@@ -10,50 +10,50 @@ module CadreNotifierSpecHelper
   end
 end
 
-context "CadreNotifier" do
-  include CadreNotifierSpecHelper
+context "Notifier" do
+  include NotifierSpecHelper
   
   specify "should deliver signed_up(signup) on create Signup" do
-    CadreNotifier.should_receive(:deliver_signed_up) {|signup| signup.email.should_be == 'gumby@play.com' }
+    Notifier.should_receive(:deliver_signed_up) {|signup| signup.email.should_be == 'gumby@play.com' }
     Signup.create :email => 'gumby@play.com', :password => 'rubber'
   end
 
   specify "should not deliver signed_up(signup) on create Signup with :send_email => false" do
-    CadreNotifier.should_not_receive(:deliver_signed_up)
+    Notifier.should_not_receive(:deliver_signed_up)
     Signup.create :email => 'gumby@play.com', :password => 'rubber', :send_email => false
   end
 
   specify "should deliver activated(user) on create Activation" do
-    CadreNotifier.should_receive(:deliver_activated) {|activation| activation.user.should_be == users(:joe) }
+    Notifier.should_receive(:deliver_activated) {|activation| activation.user.should_be == users(:joe) }
     activation = Activation.new
     activation.signup = events(:signup_joe)
     activation.save
   end
   
   specify "should deliver requested_reset_password(request) on create PasswordResetRequest" do
-    CadreNotifier.should_receive(:deliver_requested_reset_password) {|request| request.user.should_be == users(:fred)}
+    Notifier.should_receive(:deliver_requested_reset_password) {|request| request.user.should_be == users(:fred)}
     PasswordResetRequest.create :email => users(:fred).email
   end
   
   specify "should deliver reset_password(reset) on create PasswordReset" do
-    CadreNotifier.should_receive(:deliver_reset_password) {|reset| reset.user.should_be == users(:fred)}
+    Notifier.should_receive(:deliver_reset_password) {|reset| reset.user.should_be == users(:fred)}
     request = PasswordResetRequest.create :email => users(:fred).email
     PasswordReset.create :request_id => request.id, :request_key => request.key, :password => 'foobar'
   end
 end
 
-context "CadreNotifier: signed_up(signup[, sent_at])" do
-  include CadreNotifierSpecHelper
+context "Notifier: signed_up(signup[, sent_at])" do
+  include NotifierSpecHelper
   
   setup do
     @signup = events(:signup_joe)
     @signup.should_receive(:key).any_number_of_times.and_return('e3907e189595061ac246459ede9600d8')
-    @mail = CadreNotifier.create_signed_up(@signup)
+    @mail = Notifier.create_signed_up(@signup)
   end
   
   specify "should have date == sent_at argument if supplied" do
     sent_at = Time.now - 1.month
-    @mail = CadreNotifier.create_signed_up(@signup, sent_at)
+    @mail = Notifier.create_signed_up(@signup, sent_at)
     @mail.date == sent_at
   end  
   
@@ -78,17 +78,17 @@ context "CadreNotifier: signed_up(signup[, sent_at])" do
   end
 end
 
-context "CadreNotifier: activated(activation[, sent_at])" do
-  include CadreNotifierSpecHelper
+context "Notifier: activated(activation[, sent_at])" do
+  include NotifierSpecHelper
   
   setup do
     @activation = events(:activation_fred)
-    @mail = CadreNotifier.create_activated(@activation)
+    @mail = Notifier.create_activated(@activation)
   end
   
   specify "should have date == sent_at argument if supplied" do
     sent_at = Time.now - 1.month
-    @mail = CadreNotifier.create_activated(@activation, sent_at)
+    @mail = Notifier.create_activated(@activation, sent_at)
     @mail.date == sent_at
   end  
   
@@ -113,18 +113,18 @@ context "CadreNotifier: activated(activation[, sent_at])" do
   end
 end
 
-context "CadreNotifier: requested_reset_password(request[, sent_at])" do
-  include CadreNotifierSpecHelper
+context "Notifier: requested_reset_password(request[, sent_at])" do
+  include NotifierSpecHelper
   
   setup do
     @request = events(:password_reset_request_fred)
     @request.should_receive(:key).any_number_of_times.and_return('34a350336e79e39e2d3244cee34f791c')
-    @mail = CadreNotifier.create_requested_reset_password(@request)
+    @mail = Notifier.create_requested_reset_password(@request)
   end
   
   specify "should have date == sent_at argument if supplied" do
     sent_at = Time.now - 1.month
-    @mail = CadreNotifier.create_requested_reset_password(@request, sent_at)
+    @mail = Notifier.create_requested_reset_password(@request, sent_at)
     @mail.date == sent_at
   end  
   
@@ -145,17 +145,17 @@ context "CadreNotifier: requested_reset_password(request[, sent_at])" do
   end
 end
 
-context "CadreNotifier: reset_password(reset[, sent_at])" do
-  include CadreNotifierSpecHelper
+context "Notifier: reset_password(reset[, sent_at])" do
+  include NotifierSpecHelper
   
   setup do
     @reset = PasswordReset.create :request_id => events(:password_reset_request_fred).id, :request_key => '34a350336e79e39e2d3244cee34f791c', :password => 'foobar'
-    @mail = CadreNotifier.create_reset_password(@reset)
+    @mail = Notifier.create_reset_password(@reset)
   end
   
   specify "should have date == sent_at argument if supplied" do
     sent_at = Time.now - 1.month
-    @mail = CadreNotifier.create_reset_password(@reset, sent_at)
+    @mail = Notifier.create_reset_password(@reset, sent_at)
     @mail.date == sent_at
   end  
   
