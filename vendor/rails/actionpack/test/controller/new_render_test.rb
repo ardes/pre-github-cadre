@@ -60,12 +60,12 @@ class NewRenderTestController < ActionController::Base
 
   def render_file_with_instance_variables
     @secret = 'in the sauce'
-    path = File.join(File.dirname(__FILE__), '../fixtures/test/render_file_with_ivar.rhtml')
+    path = File.join(File.dirname(__FILE__), '../fixtures/test/render_file_with_ivar.erb')
     render :file => path
   end
 
   def render_file_with_locals
-    path = File.join(File.dirname(__FILE__), '../fixtures/test/render_file_with_locals.rhtml')
+    path = File.join(File.dirname(__FILE__), '../fixtures/test/render_file_with_locals.erb')
     render :file => path, :locals => {:secret => 'in the sauce'} 
   end
 
@@ -227,11 +227,11 @@ class NewRenderTestController < ActionController::Base
   end
 
   def hello_world_from_rxml_using_action
-    render :action => "hello_world.rxml"
+    render :action => "hello_world.builder"
   end
 
   def hello_world_from_rxml_using_template
-    render :template => "test/hello_world.rxml"
+    render :template => "test/hello_world.builder"
   end
 
   def head_with_location_header
@@ -669,14 +669,14 @@ EOS
   def test_update_page
     get :update_page
     assert_template nil
-    assert_equal 'text/javascript; charset=utf-8', @response.headers['Content-Type']
+    assert_equal 'text/javascript; charset=utf-8', @response.headers['type']
     assert_equal 2, @response.body.split($/).length
   end
   
   def test_update_page_with_instance_variables
     get :update_page_with_instance_variables
     assert_template nil
-    assert_equal 'text/javascript; charset=utf-8', @response.headers['Content-Type']
+    assert_equal 'text/javascript; charset=utf-8', @response.headers['type']
     assert_match /balance/, @response.body
     assert_match /\$37/, @response.body
   end

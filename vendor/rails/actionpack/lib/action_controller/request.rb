@@ -51,6 +51,10 @@ module ActionController
       @env['REQUEST_METHOD'].downcase.to_sym == :head
     end
 
+    def headers
+      @env
+    end
+
     # Determine whether the body of a HTTP call is URL-encoded (default)
     # or matches one of the registered param_parsers. 
     #
@@ -78,7 +82,7 @@ module ActionController
     def accepts
       @accepts ||=
         if @env['HTTP_ACCEPT'].to_s.strip.empty?
-          [ content_type, Mime::ALL ]
+          [ content_type, Mime::ALL ].compact # make sure content_type being nil is not included
         else
           Mime::Type.parse(@env['HTTP_ACCEPT'])
         end

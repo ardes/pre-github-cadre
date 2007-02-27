@@ -1,6 +1,8 @@
 require 'action_controller/cgi_ext/cgi_ext'
 require 'action_controller/cgi_ext/cookie_performance_fix'
 require 'action_controller/cgi_ext/raw_post_data_fix'
+require 'action_controller/cgi_ext/session_performance_fix'
+require 'action_controller/session/cookie_store'
 
 module ActionController #:nodoc:
   class Base
@@ -35,9 +37,9 @@ module ActionController #:nodoc:
     attr_accessor :cgi, :session_options
 
     DEFAULT_SESSION_OPTIONS = {
-      :database_manager => CGI::Session::PStore,
-      :prefix           => "ruby_sess.",
-      :session_path     => "/"
+      :database_manager => CGI::Session::CookieStore, # store data in cookie
+      :prefix           => "ruby_sess.",    # prefix session file names
+      :session_path     => "/"              # available to all paths in app
     } unless const_defined?(:DEFAULT_SESSION_OPTIONS)
 
     def initialize(cgi, session_options = {})
@@ -183,9 +185,6 @@ end_msg
     end
 
     def out(output = $stdout)
-      convert_content_type!
-      set_content_length!
-
       output.binmode      if output.respond_to?(:binmode)
       output.sync = false if output.respond_to?(:sync=)
 
@@ -208,24 +207,5 @@ end_msg
         # lost connection to parent process, ignore output
       end
     end
-
-    private
-      def convert_content_type!
-        if content_type = @headers.delete("Content-Type")
-          @headers["type"] = content_type
-        end
-        if content_type = @headers.delete("Content-type")
-          @headers["type"] = content_type
-        end
-        if content_type = @headers.delete("content-type")
-          @headers["type"] = content_type
-        end
-      end
-      
-      # Don't set the Content-Length for block-based bodies as that would mean reading it all into memory. Not nice
-      # for, say, a 2GB streaming file.
-      def set_content_length!
-        @headers["Content-Length"] = @body.size unless @body.respond_to?(:call)
-      end
   end
 end
