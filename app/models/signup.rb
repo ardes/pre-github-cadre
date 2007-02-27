@@ -18,7 +18,7 @@ class Signup < Event
   after_validation {|signup| signup.user.errors.each {|a, m| signup.errors.add(a, m)}}
   
   after_create do |signup|
-    CadreNotifier.deliver_signed_up(signup) if signup.send_email?
+    Notifier.deliver_signed_up(signup) if signup.send_email?
   end
   
   attr_accessor_with_default :send_email, true

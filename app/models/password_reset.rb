@@ -16,6 +16,6 @@ class PasswordReset < ActivatedUserEvent
   end
   
   after_create do |reset|
-    CadreNotifier.deliver_reset_password(reset) if reset.user.save
+    Notifier.deliver_reset_password(reset) if reset.user.save
   end
 end

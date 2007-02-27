@@ -16,6 +16,6 @@ class PasswordResetRequest < ActivatedUserEvent
   end
   
   after_create do |request|
-    CadreNotifier.deliver_requested_reset_password(request)
+    Notifier.deliver_requested_reset_password(request)
   end
 end
