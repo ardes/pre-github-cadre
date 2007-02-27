@@ -1,4 +1,4 @@
-# (c) Copyright 2006 Nick Sieger <nicksieger@gmail.com>
+# (c) Copyright 2006-2007 Nick Sieger <nicksieger@gmail.com>
 # 
 # Permission is hereby granted, free of charge, to any person
 # obtaining a copy of this software and associated documentation files
@@ -23,6 +23,17 @@
 namespace :spec do
   task :autotest do
     require File.join(File.dirname(__FILE__), '..', 'lib', 'rspec_autotest')
-    RspecOnRailsAutotest.run
+    if File.directory? File.join(File.dirname(__FILE__), '..', '..', '..', '..', 'vendor')
+      RspecOnRailsAutotest.run
+    else
+      RspecAutotest.run
+    end
+  end
+  
+  namespace :autotest do
+    task :rails do
+      require File.join(File.dirname(__FILE__), '..', 'lib', 'rspec_autotest')
+      RspecOnRailsAutotest.run
+    end
   end
 end

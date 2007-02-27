@@ -1,4 +1,4 @@
-# (c) Copyright 2006 Nick Sieger <nicksieger@gmail.com>
+# (c) Copyright 2006-2007 Nick Sieger <nicksieger@gmail.com>
 # 
 # Permission is hereby granted, free of charge, to any person
 # obtaining a copy of this software and associated documentation files
@@ -20,59 +20,38 @@
 # CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
+require 'rubygems'
+gem 'ZenTest'
 require 'autotest'
 
-class RspecOnRailsAutotest < Autotest
+class RspecAutotest < Autotest
   attr_accessor :spec_command
-
   def initialize # :nodoc:
     @spec_command = "spec --diff unified"
     super
-    @exceptions = %r%^\./(?:coverage|db|doc|log|public|script|vendor)%
+    @exceptions = %r%^\./(?:coverage|doc)%
   end
 
   def tests_for_file(filename)
     case filename
-    when %r%^spec/fixtures/(.*)s.yml% then
-      ["spec/models/#{$1}_spec.rb",
-       "spec/controllers/#{$1}_controller_spec.rb"]
-    when %r%^spec/models/.*rb$% then
+    when /^lib\/.*\.rb$/ then
+      impl = File.basename(filename).gsub('_', '_?').sub(/\.rb$/, '')
+      @files.keys.select do |k|
+        k =~ %r%^spec/.*#{impl}_spec\.rb$%
+      end
+    when %r%^spec/spec_helper.rb% then
+      @files.keys.select do |f|
+        f =~ %r%^spec/.*_spec\.rb$%
+      end
+    when /^spec\/.*_spec\.rb$/ then
       [filename]
-    when %r%^spec/controllers/.*\.rb$% then
-      [filename]
-    # when %r%^spec/acceptance/.*\.rb$% then
-    #   [filename]
-    when %r%^app/models/(.*)\.rb$% then
-      ["spec/models/#{$1}_spec.rb"]
-    when %r%^app/helpers/application_helper.rb% then
-      @files.keys.select { |f|
-        f =~ %r%^spec/controllers/.*_spec\.rb$%
-      }
-    when %r%^app/helpers/(.*)_helper.rb% then
-      ["spec/controllers/#{$1}_controller_spec.rb"]
-    when %r%^app/controllers/application.rb$% then
-      @files.keys.select { |f|
-        f =~ %r%^spec/controllers/.*_spec\.rb$%
-      }
-    when %r%^app/controllers/(.*)\.rb$% then
-      ["spec/controllers/#{$1}_spec.rb"]
-    when %r%^app/views/layouts/% then
+    when /#{Regexp.quote(File.basename(__FILE__))}/
+      # Don't respond to changes to this file
       []
-    when %r%^app/views/(.*)/% then
-      ["spec/controllers/#{$1}_controller_spec.rb"]
-    when %r%^config/routes.rb$% then
-      @files.keys.select do |f|
-        f =~ %r%^spec/controllers/.*_spec\.rb$%
-      end
-    when %r%^spec/spec_helper.rb%,
-         %r%^config/((boot|environment(s/test)?).rb|database.yml)% then
-      @files.keys.select do |f|
-        f =~ %r%^spec/(models|controllers)/.*_spec\.rb$%
-      end
     else
       @output.puts "Dunno! #{filename}" if $TESTING
       []
-    end.uniq.select { |f| @files.has_key? f }
+    end
   end
 
   def handle_results(results)
@@ -113,5 +92,58 @@ class RspecOnRailsAutotest < Autotest
     end
 
     return cmds.join('; ')
+  end
+end
+
+class RspecOnRailsAutotest < RspecAutotest
+  def initialize # :nodoc:
+    super
+    @exceptions = %r%^\./(?:coverage|db|doc|log|public|script|vendor)%
+  end
+
+  def tests_for_file(filename)
+    case filename
+    when %r%^spec/fixtures/(.*)s.yml% then
+      ["spec/models/#{$1}_spec.rb",
+       "spec/controllers/#{$1}_controller_spec.rb"]
+    when %r%^spec/models/.*rb$% then
+      [filename]
+    when %r%^spec/controllers/.*\.rb$% then
+      [filename]
+    when %r%^spec/views/.*\.rb$% then
+      [filename]
+    when %r%^spec/helpers/.*\.rb$% then
+      [filename]
+    when %r%^app/models/(.*)\.rb$% then
+      ["spec/models/#{$1}_spec.rb"]
+    when %r%^app/helpers/application_helper.rb% then
+      @files.keys.select { |f|
+        f =~ %r%^spec/controllers/.*_spec\.rb$%
+      }
+    when %r%^app/helpers/(.*)_helper.rb% then
+      ["spec/controllers/#{$1}_controller_spec.rb", "spec/helpers/#{$1}_spec.rb"]
+    when %r%^app/controllers/application.rb$% then
+      @files.keys.select { |f|
+        f =~ %r%^spec/controllers/.*_spec\.rb$%
+      }
+    when %r%^app/controllers/(.*)\.rb$% then
+      ["spec/controllers/#{$1}_spec.rb"]
+    when %r%^app/views/layouts/% then
+      []
+    when %r%^app/views/(.*)/% then
+      ["spec/controllers/#{$1}_controller_spec.rb", "spec/views/#{$1}_spec.rb"]
+    when %r%^config/routes.rb$% then
+      @files.keys.select do |f|
+        f =~ %r%^spec/controllers/.*_spec\.rb$%
+      end
+    when %r%^spec/spec_helper.rb%,
+         %r%^config/((boot|environment(s/test)?).rb|database.yml)% then
+      @files.keys.select do |f|
+        f =~ %r%^spec/(models|controllers)/.*_spec\.rb$%
+      end
+    else
+      @output.puts "Dunno! #{filename}" if $TESTING
+      []
+    end.uniq.select { |f| @files.has_key? f }
   end
 end
