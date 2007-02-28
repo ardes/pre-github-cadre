@@ -55,3 +55,9 @@ CADRE_NAME = 'Cadre'
 CADRE_HOST = 'eeny.zapto.org:3000'
 CADRE_FROM = 'ian.w.white@gmail.com'
 CADRE_HOME = 'http://abraxis.local:3000'
+
+CADRE_CLIENT_USERNAME = 'client'
+CADRE_CLIENT_PASSWORD = 'password'
+
+CADRE_ADMIN_USERNAME = 'client'
+CADRE_ADMIN_PASSWORD = 'password'

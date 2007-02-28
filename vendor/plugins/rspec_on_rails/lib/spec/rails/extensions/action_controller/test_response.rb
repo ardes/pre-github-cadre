@@ -1,7 +1,9 @@
-module ActionController
-  class TestResponse
+module ActionController #:nodoc:
+  class TestResponse #:nodoc:
     
-    module InstanceMethodsForRSpec
+    module InstanceMethodsForRSpec #:nodoc:
+      # Deprecated - gone for 9.0
+      # Use should be_success #see Spec::Rails::Expectations::Matchers
       def should_be_success
         unless success?
           message = %Q{response code should be success (200) but }
@@ -18,38 +20,32 @@ module ActionController
         end
       end
       
+      # Deprecated - gone for 9.0
+      # Use should be_rjs #see Spec::Rails::Expectations::Matchers
       def should_have_rjs(element, *args, &block)
         __response_body.should_have_rjs element, *args
       end
 
+      # Deprecated - gone for 9.0
+      # Use should_not be_rjs #see Spec::Rails::Expectations::Matchers
       def should_not_have_rjs(element, *args)
         __response_body.should_not_have_rjs element, *args
       end
 
+      # Deprecated - gone for 9.0
+      # Use should have_tag #see Spec::Rails::Expectations::Matchers
       def should_have_tag(tag, *opts)
         __response_body.should_have_tag tag, *opts
       end
 
+      # Deprecated - gone for 9.0
+      # Use should_not have_tag #see Spec::Rails::Expectations::Matchers
       def should_not_have_tag(tag, *opts)
         __response_body.should_not_have_tag tag, *opts
       end
-      
-      def should_have(*args, &block)
-        __assert_select_wrapper.should_have(*args, &block)
-      end
-      
-      def should_have_feed(type, version=nil, &block)
-        __assert_select_wrapper.should_have_feed(type, version, &block)
-      end
-      
-      def should_have_encoded(element=nil, &block)
-        __assert_select_wrapper.should_have_encoded(element, &block)
-      end
-      
-      def should_have_email(&block)
-        __assert_select_wrapper.should_have_email(&block)
-      end
-      
+            
+      # Deprecated - gone for 9.0
+      # Use should redirect_to #see Spec::Rails::Expectations::Matchers
       def should_redirect_to(url)
         unless redirect?
           Spec::Expectations.fail_with(%Q{expected redirect to #{to_url(url)} but there was no redirect})
@@ -69,6 +65,9 @@ module ActionController
       
       attr_writer :render_matcher
       attr_writer :controller_path
+
+      # Deprecated - gone for 9.0
+      # Use should render_template or have_text #see Spec::Rails::Expectations::Matchers
       def should_render(expected)
         if expected.is_a?(Symbol) || expected.is_a?(String)
           expected = {:template => "#{controller_path}/#{expected}"}
@@ -81,11 +80,7 @@ module ActionController
       attr_reader :controller_path
       
       def __response_body
-        Spec::Rails::ResponseBody.new(self.body)
-      end
-      
-      def __assert_select_wrapper
-        @__assert_select_wrapper ||= Spec::Rails::AssertSelectWrapper.new(self)
+        Spec::Rails::Expectations::ResponseBody.new(self.body)
       end
     end
     

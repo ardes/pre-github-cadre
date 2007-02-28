@@ -28,6 +28,17 @@ context "Routes for the EventsController should map" do
   end
 end
 
+context "EventsController without HTTP_AUTH creds" do
+  controller_name :events
+  
+  [:index, :show, :update, :edit, :create, :new, :destroy].each do |action|
+    specify "should be unauthorized for #{action}" do
+      get action
+      response.response_code.should == 401
+    end
+  end
+end
+
 context "Requesting /events using GET" do
   controller_name :events
 
@@ -37,6 +48,7 @@ context "Requesting /events using GET" do
   end
   
   def do_get
+    authorize_cadre_admin
     get :index
   end
   
@@ -72,6 +84,7 @@ context "Requesting /events.xml using GET" do
   end
   
   def do_get
+    authorize_cadre_admin
     @request.env["HTTP_ACCEPT"] = "application/xml"
     get :index
   end
@@ -103,6 +116,7 @@ context "Requesting /events.atom using GET" do
   end
   
   def do_get
+    authorize_cadre_admin
     @request.env["HTTP_ACCEPT"] = "application/atom+xml"
     get :index
   end
@@ -134,6 +148,7 @@ context "Requesting /events.rss using GET" do
   end
   
   def do_get
+    authorize_cadre_admin
     @request.env["HTTP_ACCEPT"] = "application/rss+xml"
     get :index
   end
@@ -164,6 +179,7 @@ context "Requesting /events/1 using GET" do
   end
   
   def do_get
+    authorize_cadre_admin
     get :show, :id => "1"
   end
 
@@ -198,6 +214,7 @@ context "Requesting /events/1.xml using GET" do
   end
   
   def do_get
+    authorize_cadre_admin
     @request.env["HTTP_ACCEPT"] = "application/xml"
     get :show, :id => "1"
   end
@@ -230,6 +247,7 @@ context "Requesting /events/new using GET" do
   end
   
   def do_get
+    authorize_cadre_admin
     get :new
   end
 
@@ -273,6 +291,7 @@ context "Requesting /events/1;edit using GET" do
   end
   
   def do_get
+    authorize_cadre_admin
     get :edit, :id => "1"
   end
 
@@ -310,6 +329,7 @@ context "Requesting /events using POST" do
   end
   
   def do_post
+    authorize_cadre_admin
     post :create, :event => {:name => 'Event'}
   end
   
@@ -340,6 +360,7 @@ context "Requesting /events/1 using PUT" do
   end
   
   def do_update
+    authorize_cadre_admin
     put :update, :id => "1"
   end
   
@@ -375,6 +396,7 @@ context "Requesting /events/1 using DELETE" do
   end
   
   def do_delete
+    authorize_cadre_admin
     delete :destroy, :id => "1"
   end
 

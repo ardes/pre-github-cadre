@@ -1,12 +1,9 @@
 module Spec
   module Rails
-    module VERSION
+    module VERSION #:nodoc:
       unless defined?(REV)
-        # RANDOM_TOKEN: 0.0576964611027444
-        # REV = "$LastChangedRevision: 1407 $".match(/LastChangedRevision: (\d+)/)[1]
-        # NOTE - need to hardcode this because the 0.7.5.1 gem has rev 1395
-        #        while this tagged release was released at 1394
-        REV = "1395"
+        # RANDOM_TOKEN: 0.685900667499735
+        REV = "$LastChangedRevision: 1549 $".match(/LastChangedRevision: (\d+)/)[1]
       end
     end
   end

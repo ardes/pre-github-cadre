@@ -2,6 +2,8 @@ class EventsController < ApplicationController
   resources_controller_for :events
   include Cadre::Feeder
   inherit_views
+  
+  before_filter :require_client
 
   # For events that generate a key, we return that in the header.  The cadre client
   # knows to attach this as an attribute if it is present

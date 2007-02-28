@@ -4,27 +4,27 @@ context "Routes for the <%= controller_class_name %>Controller should map" do
   controller_name :<%= table_name %>
 
   specify "{ :controller => '<%= table_name %>', :action => 'index' } to /<%= table_name %>" do
-    route_for(:controller => "<%= table_name %>", :action => "index").should_eql "/<%= table_name %>"
+    route_for(:controller => "<%= table_name %>", :action => "index").should == "/<%= table_name %>"
   end
   
   specify "{ :controller => '<%= table_name %>', :action => 'new' } to /<%= table_name %>/new" do
-    route_for(:controller => "<%= table_name %>", :action => "new").should_eql "/<%= table_name %>/new"
+    route_for(:controller => "<%= table_name %>", :action => "new").should == "/<%= table_name %>/new"
   end
   
   specify "{ :controller => '<%= table_name %>', :action => 'show', :id => 1 } to /<%= table_name %>/1" do
-    route_for(:controller => "<%= table_name %>", :action => "show", :id => 1).should_eql "/<%= table_name %>/1"
+    route_for(:controller => "<%= table_name %>", :action => "show", :id => 1).should == "/<%= table_name %>/1"
   end
   
   specify "{ :controller => '<%= table_name %>', :action => 'edit', :id => 1 } to /<%= table_name %>/1;edit" do
-    route_for(:controller => "<%= table_name %>", :action => "edit", :id => 1).should_eql "/<%= table_name %>/1;edit"
+    route_for(:controller => "<%= table_name %>", :action => "edit", :id => 1).should == "/<%= table_name %>/1;edit"
   end
   
   specify "{ :controller => '<%= table_name %>', :action => 'update', :id => 1} to /<%= table_name %>/1" do
-    route_for(:controller => "<%= table_name %>", :action => "update", :id => 1).should_eql "/<%= table_name %>/1"
+    route_for(:controller => "<%= table_name %>", :action => "update", :id => 1).should == "/<%= table_name %>/1"
   end
   
   specify "{ :controller => '<%= table_name %>', :action => 'destroy', :id => 1} to /<%= table_name %>/1" do
-    route_for(:controller => "<%= table_name %>", :action => "destroy", :id => 1).should_eql "/<%= table_name %>/1"
+    route_for(:controller => "<%= table_name %>", :action => "destroy", :id => 1).should == "/<%= table_name %>/1"
   end
 end
 
@@ -32,8 +32,8 @@ context "Requesting /<%= table_name %> using GET" do
   controller_name :<%= table_name %>
 
   setup do
-    @mock_<%= table_name %> = mock('<%= table_name %>')
-    <%= class_name %>.stub!(:find).and_return(@mock_<%= table_name %>)
+    @<%= file_name %> = mock_model(<%= class_name %>)
+    <%= class_name %>.stub!(:find).and_return(@<%= file_name %>)
   end
   
   def do_get
@@ -42,7 +42,7 @@ context "Requesting /<%= table_name %> using GET" do
   
   specify "should be successful" do
     do_get
-    response.should_be_success
+    response.should be_success
   end
 
   specify "should render index.rhtml" do
@@ -51,14 +51,13 @@ context "Requesting /<%= table_name %> using GET" do
   end
   
   specify "should find all <%= table_name %>" do
-    <%= class_name %>.should_receive(:find).with(:all).and_return(@mock_<%= table_name %>)
+    <%= class_name %>.should_receive(:find).with(:all).and_return([@<%= file_name %>])
     do_get
   end
   
   specify "should assign the found <%= table_name %> for the view" do
     do_get
-    assigns[:<%= table_name %>].should_be @mock_<%= table_name %>
-    
+    assigns[:<%= table_name %>].should equal(@<%= file_name %>)
   end
 end
 
@@ -66,9 +65,8 @@ context "Requesting /<%= table_name %>.xml using GET" do
   controller_name :<%= table_name %>
 
   setup do
-    @mock_<%= table_name %> = mock('<%= table_name %>')
-    @mock_<%= table_name %>.stub!(:to_xml).and_return("XML")
-    <%= class_name %>.stub!(:find).and_return(@mock_<%= table_name %>)
+    @<%= file_name %> = mock_model(<%= class_name %>, :to_xml => "XML")
+    <%= class_name %>.stub!(:find).and_return(@<%= file_name %>)
   end
   
   def do_get
@@ -78,18 +76,18 @@ context "Requesting /<%= table_name %>.xml using GET" do
   
   specify "should be successful" do
     do_get
-    response.should_be_success
+    response.should be_success
   end
 
   specify "should find all <%= table_name %>" do
-    <%= class_name %>.should_receive(:find).with(:all).and_return(@mock_<%= table_name %>)
+    <%= class_name %>.should_receive(:find).with(:all).and_return([@<%= file_name %>])
     do_get
   end
   
   specify "should render the found <%= table_name %> as xml" do
-    @mock_<%= table_name %>.should_receive(:to_xml).and_return("XML")
+    @<%= file_name %>.should_receive(:to_xml).and_return("XML")
     do_get
-    response.body.should_eql "XML"
+    response.body.should == "XML"
   end
 end
 
@@ -97,8 +95,8 @@ context "Requesting /<%= table_name %>/1 using GET" do
   controller_name :<%= table_name %>
 
   setup do
-    @mock_<%= class_name.underscore %> = mock('<%= class_name %>')
-    <%= class_name %>.stub!(:find).and_return(@mock_<%= class_name.underscore %>)
+    @<%= file_name %> = mock_model(<%= class_name %>)
+    <%= class_name %>.stub!(:find).and_return(@<%= file_name %>)
   end
   
   def do_get
@@ -107,7 +105,7 @@ context "Requesting /<%= table_name %>/1 using GET" do
 
   specify "should be successful" do
     do_get
-    response.should_be_success
+    response.should be_success
   end
   
   specify "should render show.rhtml" do
@@ -115,14 +113,14 @@ context "Requesting /<%= table_name %>/1 using GET" do
     do_get
   end
   
-  specify "should find the <%= class_name.underscore %> requested" do
-    <%= class_name %>.should_receive(:find).with("1").and_return(@mock_<%= class_name.underscore %>)
+  specify "should find the <%= file_name %> requested" do
+    <%= class_name %>.should_receive(:find).with("1").and_return(@<%= file_name %>)
     do_get
   end
   
-  specify "should assign the found <%= class_name.underscore %> for the view" do
+  specify "should assign the found <%= file_name %> for the view" do
     do_get
-    assigns[:<%= class_name.underscore %>].should_be @mock_<%= class_name.underscore %>
+    assigns[:<%= file_name %>].should equal(@<%= file_name %>)
   end
 end
 
@@ -130,9 +128,8 @@ context "Requesting /<%= table_name %>/1.xml using GET" do
   controller_name :<%= table_name %>
 
   setup do
-    @mock_<%= class_name.underscore %> = mock('<%= class_name %>')
-    @mock_<%= class_name.underscore %>.stub!(:to_xml).and_return("XML")
-    <%= class_name %>.stub!(:find).and_return(@mock_<%= class_name.underscore %>)
+    @<%= file_name %> = mock_model(<%= class_name %>, :to_xml => "XML")
+    <%= class_name %>.stub!(:find).and_return(@<%= file_name %>)
   end
   
   def do_get
@@ -142,18 +139,18 @@ context "Requesting /<%= table_name %>/1.xml using GET" do
 
   specify "should be successful" do
     do_get
-    response.should_be_success
+    response.should be_success
   end
   
-  specify "should find the <%= class_name.underscore %> requested" do
-    <%= class_name %>.should_receive(:find).with("1").and_return(@mock_<%= class_name.underscore %>)
+  specify "should find the <%= file_name %> requested" do
+    <%= class_name %>.should_receive(:find).with("1").and_return(@<%= file_name %>)
     do_get
   end
   
-  specify "should render the found <%= class_name.underscore %> as xml" do
-    @mock_<%= class_name.underscore %>.should_receive(:to_xml).and_return("XML")
+  specify "should render the found <%= file_name %> as xml" do
+    @<%= file_name %>.should_receive(:to_xml).and_return("XML")
     do_get
-    response.body.should_eql "XML"
+    response.body.should == "XML"
   end
 end
 
@@ -161,8 +158,8 @@ context "Requesting /<%= table_name %>/new using GET" do
   controller_name :<%= table_name %>
 
   setup do
-    @mock_<%= class_name.underscore %> = mock('<%= class_name %>')
-    <%= class_name %>.stub!(:new).and_return(@mock_<%= class_name.underscore %>)
+    @<%= file_name %> = mock_model(<%= class_name %>)
+    <%= class_name %>.stub!(:new).and_return(@<%= file_name %>)
   end
   
   def do_get
@@ -171,7 +168,7 @@ context "Requesting /<%= table_name %>/new using GET" do
 
   specify "should be successful" do
     do_get
-    response.should_be_success
+    response.should be_success
   end
   
   specify "should render new.rhtml" do
@@ -179,19 +176,19 @@ context "Requesting /<%= table_name %>/new using GET" do
     do_get
   end
   
-  specify "should create an new <%= class_name.underscore %>" do
-    <%= class_name %>.should_receive(:new).and_return(@mock_<%= class_name.underscore %>)
+  specify "should create an new <%= file_name %>" do
+    <%= class_name %>.should_receive(:new).and_return(@<%= file_name %>)
     do_get
   end
   
-  specify "should not save the new <%= class_name.underscore %>" do
-    @mock_<%= class_name.underscore %>.should_not_receive(:save)
+  specify "should not save the new <%= file_name %>" do
+    @<%= file_name %>.should_not_receive(:save)
     do_get
   end
   
-  specify "should assign the new <%= class_name.underscore %> for the view" do
+  specify "should assign the new <%= file_name %> for the view" do
     do_get
-    assigns[:<%= class_name.underscore %>].should_be @mock_<%= class_name.underscore %>
+    assigns[:<%= file_name %>].should be(@<%= file_name %>)
   end
 end
 
@@ -199,8 +196,8 @@ context "Requesting /<%= table_name %>/1;edit using GET" do
   controller_name :<%= table_name %>
 
   setup do
-    @mock_<%= class_name.underscore %> = mock('<%= class_name %>')
-    <%= class_name %>.stub!(:find).and_return(@mock_<%= class_name.underscore %>)
+    @<%= file_name %> = mock_model(<%= class_name %>)
+    <%= class_name %>.stub!(:find).and_return(@<%= file_name %>)
   end
   
   def do_get
@@ -209,7 +206,7 @@ context "Requesting /<%= table_name %>/1;edit using GET" do
 
   specify "should be successful" do
     do_get
-    response.should_be_success
+    response.should be_success
   end
   
   specify "should render edit.rhtml" do
@@ -217,14 +214,14 @@ context "Requesting /<%= table_name %>/1;edit using GET" do
     controller.should_render :edit
   end
   
-  specify "should find the <%= class_name.underscore %> requested" do
-    <%= class_name %>.should_receive(:find).and_return(@mock_<%= class_name.underscore %>)
+  specify "should find the <%= file_name %> requested" do
+    <%= class_name %>.should_receive(:find).and_return(@<%= file_name %>)
     do_get
   end
   
   specify "should assign the found <%= class_name %> for the view" do
     do_get
-    assigns(:<%= class_name.underscore %>).should_equal @mock_<%= class_name.underscore %>
+    assigns[:<%= file_name %>].should equal(@<%= file_name %>)
   end
 end
 
@@ -232,25 +229,22 @@ context "Requesting /<%= table_name %> using POST" do
   controller_name :<%= table_name %>
 
   setup do
-    @mock_<%= class_name.underscore %> = mock('<%= class_name %>')
-    @mock_<%= class_name.underscore %>.stub!(:save).and_return(true)
-    @mock_<%= class_name.underscore %>.stub!(:to_param).and_return(1)
-    <%= class_name %>.stub!(:new).and_return(@mock_<%= class_name.underscore %>)
+    @<%= file_name %> = mock_model(<%= class_name %>, :to_param => "1", :save => true)
+    <%= class_name %>.stub!(:new).and_return(@<%= file_name %>)
   end
   
   def do_post
-    post :create, :<%= class_name.underscore %> => {:name => '<%= class_name %>'}
+    post :create, :<%= file_name %> => {:name => '<%= class_name %>'}
   end
   
-  specify "should create a new <%= class_name.underscore %>" do
-    <%= class_name %>.should_receive(:new).with({'name' => '<%= class_name %>'}).and_return(@mock_<%= class_name.underscore %>)
+  specify "should create a new <%= file_name %>" do
+    <%= class_name %>.should_receive(:new).with({'name' => '<%= class_name %>'}).and_return(@<%= file_name %>)
     do_post
   end
 
-  specify "should redirect to the new <%= class_name.underscore %>" do
+  specify "should redirect to the new <%= file_name %>" do
     do_post
-    response.should_be_redirect
-    response.redirect_url.should_eql "http://test.host/<%= table_name %>/1"
+    response.should redirect_to("http://test.host/<%= table_name %>/1")
   end
 end
 
@@ -258,35 +252,34 @@ context "Requesting /<%= table_name %>/1 using PUT" do
   controller_name :<%= table_name %>
 
   setup do
-    @mock_<%= class_name.underscore %> = mock('<%= class_name %>', :null_object => true)
-    @mock_<%= class_name.underscore %>.stub!(:to_param).and_return(1)
-    <%= class_name %>.stub!(:find).and_return(@mock_<%= class_name.underscore %>)
+    @<%= file_name %> = mock_model(<%= class_name %>, :to_param => "1", :update_attributes => true)
+    <%= class_name %>.stub!(:find).and_return(@<%= file_name %>)
   end
   
   def do_update
     put :update, :id => "1"
   end
   
-  specify "should find the <%= class_name.underscore %> requested" do
-    <%= class_name %>.should_receive(:find).with("1").and_return(@mock_<%= class_name.underscore %>)
+  specify "should find the <%= file_name %> requested" do
+    <%= class_name %>.should_receive(:find).with("1").and_return(@<%= file_name %>)
     do_update
   end
 
-  specify "should update the found <%= class_name.underscore %>" do
-    @mock_<%= class_name.underscore %>.should_receive(:update_attributes)
+  specify "should update the found <%= file_name %>" do
+    @<%= file_name %>.should_receive(:update_attributes)
     do_update
-    assigns(:<%= class_name.underscore %>).should_be @mock_<%= class_name.underscore %>
+    assigns(:<%= file_name %>).should equal(@<%= file_name %>)
   end
 
-  specify "should assign the found <%= class_name.underscore %> for the view" do
+  specify "should assign the found <%= file_name %> for the view" do
     do_update
-    assigns(:<%= class_name.underscore %>).should_be @mock_<%= class_name.underscore %>
+    assigns(:<%= file_name %>).should equal(@<%= file_name %>)
   end
 
-  specify "should redirect to the <%= class_name.underscore %>" do
+  specify "should redirect to the <%= file_name %>" do
     do_update
-    response.should_be_redirect
-    response.redirect_url.should_eql "http://test.host/<%= table_name %>/1"
+    response.should be_redirect
+    response.redirect_url.should == "http://test.host/<%= table_name %>/1"
   end
 end
 
@@ -294,27 +287,26 @@ context "Requesting /<%= table_name %>/1 using DELETE" do
   controller_name :<%= table_name %>
 
   setup do
-    @mock_<%= class_name.underscore %> = mock('<%= class_name %>', :null_object => true)
-    <%= class_name %>.stub!(:find).and_return(@mock_<%= class_name.underscore %>)
+    @<%= file_name %> = mock_model(<%= class_name %>, :destroy => true)
+    <%= class_name %>.stub!(:find).and_return(@<%= file_name %>)
   end
   
   def do_delete
     delete :destroy, :id => "1"
   end
 
-  specify "should find the <%= class_name.underscore %> requested" do
-    <%= class_name %>.should_receive(:find).with("1").and_return(@mock_<%= class_name.underscore %>)
+  specify "should find the <%= file_name %> requested" do
+    <%= class_name %>.should_receive(:find).with("1").and_return(@<%= file_name %>)
     do_delete
   end
   
-  specify "should call destroy on the found <%= class_name.underscore %>" do
-    @mock_<%= class_name.underscore %>.should_receive(:destroy)
+  specify "should call destroy on the found <%= file_name %>" do
+    @<%= file_name %>.should_receive(:destroy)
     do_delete
   end
   
   specify "should redirect to the <%= table_name %> list" do
     do_delete
-    response.should_be_redirect
-    response.redirect_url.should_eql "http://test.host/<%= table_name %>"
+    response.should redirect_to("http://test.host/<%= table_name %>")
   end
 end
