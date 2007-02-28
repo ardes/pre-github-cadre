@@ -1,0 +1,3 @@
+class SignupCancellationsController < NonActivatedUserEventsController
+  resources_controller_for :signup_cancellations
+end

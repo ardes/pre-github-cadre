@@ -1,0 +1,17 @@
+# Read about fixtures at http://ar.rubyonrails.org/classes/Fixtures.html
+fred:
+  id: 1
+  email: fred@gmail.com
+  password_algorithm: sha256
+  password_salt: '2f8fe21b8ba5c801f1e504b4fc0b61363149cf28'
+  password_hash: '34d35e1aa90de11d2c464c121cc4ad316782cc339f843aa9f9c37b7a73030f55' # wilma
+  activation_id: 3
+  display_name: 'Fred Bloggs'
+joe:
+  id: 2
+  email: joe@bloggs.com
+  password_algorithm: sha256
+  password_salt: '9ba084b139e8ab487ec358ba1a6796d47f482eb3'
+  password_hash: '4c51bb36335fbd9c26d786e3e2f0c06e6f844ab3757d5f0386c547018b330ef1' # black
+  activation_id: NULL
+  display_name: NULL

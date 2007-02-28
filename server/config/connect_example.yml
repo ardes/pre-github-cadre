@@ -1,0 +1,6 @@
+local: &local
+  adapter: mysql
+  username: username
+  password: password
+  socket: /tmp/mysql.sock
+  

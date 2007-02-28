@@ -1,0 +1,36 @@
+# Read about fixtures at http://ar.rubyonrails.org/classes/Fixtures.html
+signup_fred:
+  id: 1
+  user_id: 1
+  type: Signup
+  ip_address: 187.287.120.123
+  key_algorithm: md5
+  key_hash: '8adf1ac281791c762513d4699bb0763d' # 4c467613d120cc24e06fef4f963e9267
+  created_at: 2007-01-19 12:31:21
+
+signup_joe:
+  id: 2
+  user_id: 2
+  type: Signup
+  ip_address: 187.287.123.123
+  key_algorithm: md5
+  key_hash: 'b02f0a5b71d9cf0152c9ba0b0cdddd83' # e3907e189595061ac246459ede9600d8
+  created_at: 2007-01-19 12:31:29
+
+activation_fred:
+  id: 3
+  user_id: 1
+  type: Activation
+  ip_address: 187.287.120.123
+  key_algorithm: NULL
+  key_hash: NULL
+  created_at: 2007-01-19 12:31:40
+  
+password_reset_request_fred:
+  id: 4
+  user_id: 1
+  type: PasswordResetRequest
+  ip_address: 187.287.120.123
+  key_algorithm: md5
+  key_hash: '6e990be83f39f46e605ddebe82543f89' # 34a350336e79e39e2d3244cee34f791c
+  created_at: 2007-01-19 12:81:40

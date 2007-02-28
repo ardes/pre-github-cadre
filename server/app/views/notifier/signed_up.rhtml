@@ -1,0 +1,12 @@
+Dear <%= @user.name %>,
+
+You have recently signed up to be a user of <%= @cadre_name %>.  To activate your account please visit:
+
+  <<%= activate_url(@signup.id, @signup.key) %>>
+  
+Thanks,
+The <%= @cadre_name %> Team
+<%= @cadre_name %> <<%= @cadre_home %>>
+
+
+Note. If you did NOT signup for a <%= @cadre_name %> account, or signed up in error, then you can either ignore this email, or visit: <<%= cancel_signup_url(@signup.id, @signup.key) %>> to cancel the signup.
