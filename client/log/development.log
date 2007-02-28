@@ -1,0 +1,17 @@
+  [4;36;1mSQL (0.019188)[0m   [0;1mCREATE TABLE schema_info (version int(11))[0m
+  [4;35;1mSQL (0.003017)[0m   [0mINSERT INTO schema_info (version) VALUES(0)[0m
+  [4;36;1mSQL (0.000000)[0m   [0;1mMysql::Error: #42S01Table 'schema_info' already exists: CREATE TABLE schema_info (version int(11))[0m
+  [4;35;1mSQL (0.001058)[0m   [0mSELECT version FROM schema_info[0m
+Migrating to CreateFoos (1)
+  [4;36;1mSQL (0.042313)[0m   [0;1mCREATE TABLE foos (`id` int(11) DEFAULT NULL auto_increment PRIMARY KEY, `user_id` int(11) DEFAULT NULL) ENGINE=InnoDB[0m
+  [4;35;1mSQL (0.001002)[0m   [0mUPDATE schema_info SET version = 1[0m
+  [4;36;1mSQL (0.001154)[0m   [0;1mSELECT * FROM schema_info[0m
+  [4;35;1mSQL (0.001296)[0m   [0mSHOW TABLES[0m
+  [4;36;1mSQL (0.003830)[0m   [0;1mSHOW FIELDS FROM foos[0m
+  [4;35;1mSQL (0.003093)[0m   [0mSHOW KEYS FROM foos[0m
+DEPRECATION WARNING: The inferred foreign_key name will change in Rails 2.0 to use the association name instead of its class name when they differ.  When using :class_name in belongs_to, use the :foreign_key option to explicitly set the key name to avoid problems in the transition.  See http://www.rubyonrails.org/deprecation for details. (called from ./script/../config/../config/../app/models/foo.rb:2)
+  [4;36;1mFoo Columns (0.002052)[0m   [0;1mSHOW FIELDS FROM foos[0m
+  [4;35;1mSQL (0.000630)[0m   [0mBEGIN[0m
+  [4;36;1mSQL (0.001162)[0m   [0;1mINSERT INTO foos (`user_id`) VALUES(2)[0m
+  [4;35;1mSQL (0.002331)[0m   [0mCOMMIT[0m
+  [4;36;1mFoo Load (0.001477)[0m   [0;1mSELECT * FROM foos LIMIT 1[0m
