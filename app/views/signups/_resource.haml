@@ -1,9 +1,0 @@
-%tr[resource]
-  %td= h resource.user_id
-  %td= h resource.type
-  %td= h resource.ip_address
-  %td= h resource.created_at
-  %td= "Signup for #{resource.email}"
-  %td= link_to 'Show', sti_resource_path(resource)
-  %td= link_to 'Edit', sti_edit_resource_path(resource)
-  %td= link_to 'Destroy', sti_resource_path(resource), :confirm => 'Are you sure?', :method => :delete

@@ -1,5 +1,0 @@
-The weird naming of specs is because of a bug in either autotest, rspec or STI 
-which results in errors when autotesting which don't occur when running the 
-specs in groups (like spec:models)
-
-The errors seem to occur because the correct class is not created by SomeClass.new (an object of the base class is returned)

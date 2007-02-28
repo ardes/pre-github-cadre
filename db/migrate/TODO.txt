@@ -1,1 +1,0 @@
-Add indexes once we've reached a more stable level

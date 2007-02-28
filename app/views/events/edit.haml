@@ -1,9 +1,0 @@
-%h1= "Editing #{resource_name.humanize}"
-= error_messages_for resource_name
-- form_for resource_name, :url => resource_path, :html => { :method => :put } do |form|
-  = render :partial => 'form', :locals => {:form => form}
-  %p= submit_tag "Update"
-  
-%p
-  = link_to 'Show', resource_path
-  = link_to 'Back', resources_path
